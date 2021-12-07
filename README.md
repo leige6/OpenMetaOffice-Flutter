@@ -10,6 +10,6 @@ GPL-3.0 License Business authorization required（此产品非demo，如果商�
 ### [flutter_openim_widget](https://github.com/hrxiang/flutter_openim_widget.git)
 
 ### Getting Started
-1. git clone https://github.com/OpenIMSDK/Open-IM-Flutter-Demo.git
+1. git clone https://github.com/OpenIMSDK/OpenMetaOffice-Flutter.git
 2. flutter pub get
 3. flutter run
