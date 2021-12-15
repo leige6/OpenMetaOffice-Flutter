@@ -88,7 +88,7 @@ class AppNavigator {
       case 1:
         return Get.offNamedUntil(
           AppRoutes.CHAT,
-              (route) => route.settings.name == AppRoutes.HOME,
+          (route) => route.settings.name == AppRoutes.HOME,
           arguments: arguments,
         );
 
@@ -319,21 +319,21 @@ class AppNavigator {
     Get.to(() => QrcodeView());
   }
 
-  // static void startGroupCall({
-  //   required String gid,
-  //   required String senderUid,
-  //   required List<String> receiverIds,
-  //   required String type,
-  //   required CallState state,
-  // }) {
-  //   Get.toNamed(AppRoutes.GROUP_CALL, arguments: {
-  //     'gid': gid,
-  //     'senderUid': senderUid,
-  //     'receiverIds': receiverIds,
-  //     'type': type,
-  //     'state': state,
-  //   });
-  // }
+  static void startGroupCall({
+    required String gid,
+    required String senderUid,
+    required List<String> receiverIds,
+    required String type,
+    required CallState state,
+  }) {
+    Get.toNamed(AppRoutes.GROUP_CALL, arguments: {
+      'gid': gid,
+      'senderUid': senderUid,
+      'receiverIds': receiverIds,
+      'type': type,
+      'state': state,
+    });
+  }
 
   static Future<T?>? startLanguageSetup<T>() {
     return Get.toNamed(AppRoutes.LANGUAGE_SETUP);

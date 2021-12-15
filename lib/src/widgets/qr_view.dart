@@ -28,8 +28,11 @@ class QrcodeView extends StatefulWidget {
 
 class _QrcodeViewState extends State<QrcodeView> with TickerProviderStateMixin {
   final _picker = ImagePicker();
-  Barcode? result;
+
+  // Barcode? result;
   QRViewController? controller;
+
+  // Stream? stream;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   AnimationController? _animationController;
   Timer? _timer;
@@ -48,6 +51,7 @@ class _QrcodeViewState extends State<QrcodeView> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    // stream?.cancel();
     controller?.dispose();
     _clearAnimation();
     super.dispose();
@@ -104,6 +108,7 @@ class _QrcodeViewState extends State<QrcodeView> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Stack(
         children: <Widget>[
           _buildQrView(),
@@ -231,13 +236,11 @@ class _QrcodeViewState extends State<QrcodeView> with TickerProviderStateMixin {
   }
 
   void _onQRViewCreated(QRViewController controller) {
-    setState(() {
-      this.controller = controller;
-    });
-    this.controller?.scannedDataStream.listen((scanData) {
-      // if (!mounted) return;
-      result = scanData;
-      _parse(result?.code);
+    this.controller = controller;
+    this.controller?.scannedDataStream.asBroadcastStream().listen((scanData) {
+      if (!mounted) return;
+      _parse(scanData.code);
+      // result = scanData;
       // setState(() {
       // Barcode Type: ${describeEnum(result!.format)}   Data: ${result!.code}
       // });
@@ -246,7 +249,7 @@ class _QrcodeViewState extends State<QrcodeView> with TickerProviderStateMixin {
 
   void _parse(String? result) {
     if (null != result) {
-      print('========result:$result=====');
+      controller?.pauseCamera();
       if (result.startsWith(IMQrcodeUrl.addFriend)) {
         var uid = result.substring(IMQrcodeUrl.addFriend.length);
         AppNavigator.startFriendInfo2(info: UserInfo(uid: uid));
@@ -256,14 +259,18 @@ class _QrcodeViewState extends State<QrcodeView> with TickerProviderStateMixin {
         AppNavigator.startSearchAddGroup2(info: GroupInfo(groupID: gid));
         // Get.back();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(result)),
-        );
+        Get.back();
+        Get.snackbar('QRCode', result);
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text(result)),
+        // );
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Not find')),
-      );
+      Get.back();
+      Get.snackbar('QRCode', 'Not find');
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text('Not find')),
+      // );
     }
   }
 

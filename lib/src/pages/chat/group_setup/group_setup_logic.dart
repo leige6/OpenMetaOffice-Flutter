@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:get/get.dart';
+import 'package:openim_enterprise_chat/src/core/controller/app_controller.dart';
 import 'package:openim_enterprise_chat/src/core/controller/im_controller.dart';
 import 'package:openim_enterprise_chat/src/models/group_member_info.dart' as en;
 import 'package:openim_enterprise_chat/src/pages/chat/group_setup/group_member_manager/member_list/member_list_logic.dart';
@@ -8,16 +9,20 @@ import 'package:openim_enterprise_chat/src/res/strings.dart';
 import 'package:openim_enterprise_chat/src/routes/app_navigator.dart';
 import 'package:openim_enterprise_chat/src/widgets/custom_dialog.dart';
 import 'package:openim_enterprise_chat/src/widgets/im_widget.dart';
+import 'package:openim_enterprise_chat/src/widgets/loading_view.dart';
 
 import '../chat_logic.dart';
 
 class GroupSetupLogic extends GetxController {
   var imLogic = Get.find<IMController>();
   var chatLogic = Get.find<ChatLogic>();
+  var appLogic = Get.find<AppController>();
   late Rx<GroupInfo> info;
   var memberList = <en.GroupMembersInfo>[].obs;
   var myGroupNickname = "".obs;
   var topContacts = false.obs;
+  var noDisturb = false.obs;
+  var noDisturbIndex = 0.obs;
   ConversationInfo? conversationInfo;
 
   getGroupMembers() async {
@@ -79,7 +84,7 @@ class GroupSetupLogic extends GetxController {
   }
 
   void modifyGroupName() {
-    if(info.value.ownerId != OpenIM.iMManager.uid){
+    if (info.value.ownerId != OpenIM.iMManager.uid) {
       IMWidget.showToast(StrRes.onlyTheOwnerCanModify);
       return;
     }
@@ -88,7 +93,7 @@ class GroupSetupLogic extends GetxController {
   }
 
   void editGroupAnnouncement() {
-    if(info.value.ownerId != OpenIM.iMManager.uid){
+    if (info.value.ownerId != OpenIM.iMManager.uid) {
       IMWidget.showToast(StrRes.onlyTheOwnerCanModify);
       return;
     }
@@ -209,12 +214,12 @@ class GroupSetupLogic extends GetxController {
     imLogic.groupInfoUpdatedSubject.listen((value) {
       if (value.groupID == info.value.groupID) {
         info.update((val) {
-          val?.ownerId = value.ownerId;
+          // val?.ownerId = value.ownerId;
           val?.groupName = value.groupName;
           val?.faceUrl = value.faceUrl;
           val?.notification = value.notification;
           val?.introduction = value.introduction;
-          val?.memberCount = value.memberCount;
+          // val?.memberCount = value.memberCount;
         });
       }
     });
@@ -241,6 +246,7 @@ class GroupSetupLogic extends GetxController {
     getGroupInfo();
     getConversationInfo();
     getGroupMembers();
+    getConversationRecvMessageOpt();
     super.onReady();
   }
 
@@ -309,5 +315,51 @@ class GroupSetupLogic extends GetxController {
     );
     chatLogic.clearAllMessage();
     IMWidget.showToast(StrRes.clearSuccess);
+  }
+
+  void toggleNotDisturb() {
+    noDisturb.value = !noDisturb.value;
+    if (!noDisturb.value) noDisturbIndex.value = 0;
+    setConversationRecvMessageOpt(status: noDisturb.value ? 2 : 0);
+  }
+
+  void noDisturbSetting() {
+    IMWidget.openNoDisturbSettingSheet(
+      isGroup: true,
+      onTap: (index) {
+        setConversationRecvMessageOpt(status: index == 0 ? 2 : 1);
+        noDisturbIndex.value = index;
+      },
+    );
+  }
+
+  /// 消息免打扰
+  /// 1: Do not receive messages, 2: Do not notify when messages are received; 0: Normal
+  void setConversationRecvMessageOpt({int status = 2}) {
+    var id = 'group_${info.value.groupID}';
+    LoadingView.singleton.wrap(
+        asyncFunction: () =>
+            OpenIM.iMManager.conversationManager.setConversationRecvMessageOpt(
+              conversationIDList: [id],
+              status: status,
+            ).then((value) => appLogic.notDisturbMap[id] = status != 0));
+  }
+
+  /// 消息免打扰
+  /// 1: Do not receive messages, 2: Do not notify when messages are received; 0: Normal
+  /// [{"conversationId":"single_13922222222","result":0}]
+  void getConversationRecvMessageOpt() async {
+    var list = await OpenIM.iMManager.conversationManager
+        .getConversationRecvMessageOpt(
+      conversationIDList: ['group_${info.value.groupID}'],
+    );
+    if (list.isNotEmpty) {
+      var map = list.first;
+      var status = map['result'];
+      noDisturb.value = status != 0;
+      if (noDisturb.value) {
+        noDisturbIndex.value = status == 1 ? 1 : 0;
+      }
+    }
   }
 }

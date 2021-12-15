@@ -232,6 +232,8 @@ class EnterpriseTitleBar extends StatelessWidget
     Function()? onClickMoreBtn,
     Function()? onClose,
     Color? backgroundColor,
+    bool showOnlineStatus = false,
+    bool online = false,
   })  : //height = height ?? 84.h,
         // topPadding = 40.h,
         height = height ?? 44.h,
@@ -291,10 +293,25 @@ class EnterpriseTitleBar extends StatelessWidget
                 title,
                 style: PageStyle.ts_333333_18sp,
               ),
-            if (null != subTitle)
-              Text(
-                subTitle,
-                style: PageStyle.ts_999999_10sp,
+            if (null != subTitle && subTitle.isNotEmpty)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (showOnlineStatus)
+                    Container(
+                      margin: EdgeInsets.only(right: 4.w, top: 2.h),
+                      width: 6.h,
+                      height: 6.h,
+                      decoration: BoxDecoration(
+                        color: online ? PageStyle.c_10CC64 : PageStyle.c_959595,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  Text(
+                    subTitle,
+                    style: PageStyle.ts_999999_10sp,
+                  )
+                ],
               ),
           ],
         );

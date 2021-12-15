@@ -571,4 +571,26 @@ class StrRes {
   static get online => 'online'.tr;
 
   static get offline => 'offline'.tr;
+
+  static get phoneOnline => 'phoneOnline'.tr;
+
+  static get pcOnline => 'pcOnline'.tr;
+
+  static get webOnline => 'webOnline'.tr;
+
+  static get webMiniOnline => 'webMiniOnline'.tr;
+
+  static get blockFriends => 'blockFriends'.tr;
+
+  static get groupMessageSettings => 'groupMessageSettings'.tr;
+
+  static get friendMessageSettings => 'friendMessageSettings'.tr;
+
+  static get receiveMessageButNotPrompt => 'receiveMessageButNotPrompt'.tr;
+
+  static get blockGroupMessages => 'blockGroupMessages'.tr;
+
+  static get accountWarn => 'accountWarn'.tr;
+
+  static get accountException => 'accountException'.tr;
 }

@@ -36,24 +36,24 @@ class WrapAzListView<T extends ISuspensionBean> extends StatelessWidget {
         susItemBuilder: (BuildContext context, int index) {
           var model = data[index];
           return _buildTagView(model.getSuspensionTag());
-      },
-      indexBarData: SuspensionUtil.getTagIndexList(data),
-      indexBarOptions: IndexBarOptions(
-        needRebuild: true,
-        selectTextStyle: TextStyle(
-          fontSize: 12,
-          color: Colors.white,
-          fontWeight: FontWeight.w500,
-        ),
-        selectItemDecoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Color(0xFF333333),
-        ),
-        indexHintWidth: 96,
-        indexHintHeight: 97,
-        indexHintDecoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(ImageRes.ic_indexBarBg),
+        },
+        indexBarData: SuspensionUtil.getTagIndexList(data),
+        indexBarOptions: IndexBarOptions(
+          needRebuild: true,
+          selectTextStyle: TextStyle(
+            fontSize: 12,
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ),
+          selectItemDecoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Color(0xFF333333),
+          ),
+          indexHintWidth: 96,
+          indexHintHeight: 97,
+          indexHintDecoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(ImageRes.ic_indexBarBg),
               fit: BoxFit.contain,
             ),
           ),
@@ -88,6 +88,7 @@ Widget buildAzListItemView({
   bool isMultiModel = false,
   bool checked = false,
   bool enabled = true,
+  String? onlineStatus,
 }) =>
     Ink(
       child: InkWell(
@@ -124,10 +125,22 @@ Widget buildAzListItemView({
                     ),
                   ),
                   alignment: Alignment.centerLeft,
-                  child: Text(
-                    name,
-                    style: PageStyle.ts_333333_16sp,
-                    overflow: TextOverflow.ellipsis,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: PageStyle.ts_333333_16sp,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (onlineStatus != null)
+                        Text(
+                          '[$onlineStatus]',
+                          style: PageStyle.ts_999999_12sp,
+                          overflow: TextOverflow.ellipsis,
+                        )
+                    ],
                   ),
                 ),
               )

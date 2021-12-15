@@ -25,19 +25,19 @@ class ConversationPage extends StatelessWidget {
           // resizeToAvoidBottomInset: false,
           // appBar: AppBar(),
           appBar: EnterpriseTitleBar.conversationTitle(
-            title: 'xx信息技术（成都）有限公司',
-            subTitle: imLogic.userInfo.value.getShowName(),
+            // title: 'xx信息技术（成都）有限公司',
+            // subTitle: imLogic.userInfo.value.getShowName(),
             avatarUrl: imLogic.userInfo.value.icon,
             actions: _buildActions(),
-            // subTitleView: Row(
-            //   children: [
-            //     Text(
-            //       imLogic.userInfo.value.getShowName(),
-            //       style: PageStyle.ts_333333_18sp,
-            //     ),
-            //     _onlineView(),
-            //   ],
-            // ),
+            subTitleView: Row(
+              children: [
+                Text(
+                  imLogic.userInfo.value.getShowName(),
+                  style: PageStyle.ts_333333_18sp,
+                ),
+                _onlineView(),
+              ],
+            ),
           ),
           body: SlidableAutoCloseBehavior(
             child: CustomScrollView(
@@ -61,6 +61,7 @@ class ConversationPage extends StatelessWidget {
                       contentPrefix: logic.getPrefixText(index),
                       timeStr: logic.getTime(index),
                       unreadCount: logic.getUnreadCount(index),
+                      notDisturb: logic.isNotDisturb(index),
                       backgroundColor: logic.isPinned(index)
                           ? PageStyle.c_F3F3F3
                           : Colors.transparent,
@@ -174,7 +175,7 @@ class ConversationPage extends StatelessWidget {
   Widget _onlineView() => Row(
         children: [
           Container(
-            margin: EdgeInsets.only(left: 8.w, right: 4.w),
+            margin: EdgeInsets.only(left: 8.w, right: 4.w, top: 2.h),
             width: 6.h,
             height: 6.h,
             decoration: BoxDecoration(

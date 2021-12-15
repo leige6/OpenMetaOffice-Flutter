@@ -25,7 +25,7 @@ class LoginLogic extends GetxController {
   var obscureText = true.obs;
   var agreedProtocol = true.obs;
   var imLogic = Get.find<IMController>();
-  // var callLogic = Get.find<CallController>();
+  var callLogic = Get.find<CallController>();
   var jPushLogic = Get.find<JPushController>();
   var enabledLoginButton = false.obs;
   var index = 0.obs;
@@ -60,7 +60,7 @@ class LoginLogic extends GetxController {
       print('---------login---------- uid: ${data.uid}, token: ${data.token}');
       await imLogic.login(data.uid, data.token);
       print('---------im login success-------');
-      // callLogic.login(data.uid, data.token);
+      callLogic.login(data.uid, data.token);
       print('---------ion login success------');
       jPushLogic.login(data.uid);
       print('---------jpush login success----');

@@ -1,11 +1,10 @@
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bugly/flutter_bugly.dart';
-import 'package:get/get.dart';
 import 'package:openim_enterprise_chat/src/utils/data_persistence.dart';
 import 'package:openim_enterprise_chat/src/utils/http_util.dart';
-import 'package:openim_enterprise_chat/src/utils/speech_to_text_util.dart';
 import 'package:sp_util/sp_util.dart';
 
 class Config {
@@ -21,15 +20,16 @@ class Config {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+
     // 状态栏透明（Android）
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        statusBarColor: GetPlatform.isAndroid ? Colors.transparent : null,
-        statusBarBrightness: Brightness.dark,
-        statusBarIconBrightness: Brightness.dark,
-      ),
-    );
-    FlutterBugly.init(androidAppId: "4103e474e9",iOSAppId: "28849b1ca6");
+    var brightness = Platform.isAndroid ? Brightness.dark : Brightness.light;
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarBrightness: brightness,
+      statusBarIconBrightness: brightness,
+    ));
+
+    FlutterBugly.init(androidAppId: "4103e474e9", iOSAppId: "28849b1ca6");
   }
 
   static const UI_W = 375.0;
@@ -43,6 +43,7 @@ class Config {
   // static const BASE_URL = 'http://47.112.160.66:10000';
   // static const BASE_URL = 'http://1.14.194.38:10000';
   // static const BASE_URL = 'http://120.24.45.199:10000';
+  // 43.128.5.63
 
   /// sdk配置的api地址
   // static const IP_API = BASE_URL;

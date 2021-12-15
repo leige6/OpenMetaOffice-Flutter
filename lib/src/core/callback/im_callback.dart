@@ -5,8 +5,6 @@ import 'package:openim_enterprise_chat/src/core/controller/app_controller.dart';
 import 'package:rxdart/rxdart.dart';
 
 class IMCallback {
-  Function()? onKickedOffline;
-
   // Function(UserInfo u)? onSelfInfoUpdated;
   // Function(List<ConversationInfo> list)? onConversationChanged;
   // Function(List<ConversationInfo> list)? onNewConversation;
@@ -47,7 +45,7 @@ class IMCallback {
   var conversationChangedSubject = BehaviorSubject<List<ConversationInfo>>();
 
   // 未读消息数
-  var unreadMsgCountEventSubject = BehaviorSubject<int>();
+  var unreadMsgCountEventSubject = PublishSubject<int>();
 
   // 好友申请列表新增
   var friendApplicationChangedSubject = BehaviorSubject<UserInfo>();
@@ -71,12 +69,14 @@ class IMCallback {
   // 组信息更新
   var groupInfoUpdatedSubject = BehaviorSubject<GroupInfo>();
 
-  var initializedSubject = BehaviorSubject<bool>();
+  var initializedSubject = PublishSubject<bool>();
 
   var memberEnterSubject = BehaviorSubject<Map<String, dynamic>>();
 
+  var onKickedOfflineSubject = PublishSubject();
+
   void kickedOffline() {
-    onKickedOffline?.call();
+    onKickedOfflineSubject.add("");
   }
 
   void selfInfoUpdated(UserInfo u) {
@@ -198,11 +198,13 @@ class IMCallback {
     memberEnterSubject.add({"groupId": groupId, "list": list});
   }
 
-  void memberInvited(String groupId, GroupMembersInfo opUser, List<GroupMembersInfo> list) {
+  void memberInvited(
+      String groupId, GroupMembersInfo opUser, List<GroupMembersInfo> list) {
     onMemberInvited?.call(groupId, opUser, list);
   }
 
-  void memberKicked(String groupId, GroupMembersInfo opUser, List<GroupMembersInfo> list) {
+  void memberKicked(
+      String groupId, GroupMembersInfo opUser, List<GroupMembersInfo> list) {
     onMemberKicked?.call(groupId, opUser, list);
   }
 
@@ -210,7 +212,8 @@ class IMCallback {
     onMemberLeave?.call(groupId, info);
   }
 
-  void receiveJoinApplication(String groupId, GroupMembersInfo info, String opReason) {
+  void receiveJoinApplication(
+      String groupId, GroupMembersInfo info, String opReason) {
     onReceiveJoinApplication?.call(groupId, info, opReason);
   }
 
@@ -233,6 +236,7 @@ class IMCallback {
     conversationAddedSubject.close();
     conversationChangedSubject.close();
     memberEnterSubject.close();
+    onKickedOfflineSubject.close();
   }
 
   final initLogic = Get.find<AppController>();

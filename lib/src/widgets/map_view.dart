@@ -34,8 +34,10 @@ class MapView extends StatelessWidget {
               child: FlutterMap(
                 options: MapOptions(
                   center: LatLng(latitude, longitude),
-                  zoom: 14.0,
+                  zoom: 16.8,
                   maxZoom: 18.0,
+                  // adaptiveBoundaries: true,
+                  screenSize: Size(1.sw, 1.sh),
                 ),
                 layers: [
                   TileLayerOptions(

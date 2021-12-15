@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:openim_enterprise_chat/src/common/urls.dart';
 import 'package:openim_enterprise_chat/src/models/login_certificate.dart';
+import 'package:openim_enterprise_chat/src/models/online_status.dart';
 import 'package:openim_enterprise_chat/src/models/upgrade_info.dart';
 import 'package:openim_enterprise_chat/src/res/strings.dart';
 import 'package:openim_enterprise_chat/src/utils/http_util.dart';
@@ -204,6 +205,23 @@ class Apis {
       Map<String, dynamic> map = resp.data!;
       if (map['code'] == 0) {
         return UpgradeInfoV2.fromJson(map['data']);
+      }
+      return Future.error(map);
+    });
+  }
+
+  static Future<List<OnlineStatus>> onlineStatus(
+      {required List<String> uidList}) {
+    return dio.post<Map<String, dynamic>>(Urls.onlineStatus, data: {
+      "operationID": "sdfasfasfdasfda",
+      "secret": Config.secret,
+      "userIDList": uidList
+    }).then((resp) {
+      Map<String, dynamic> map = resp.data!;
+      if (map['errCode'] == 0) {
+        return (map['successResult'] as List)
+            .map((e) => OnlineStatus.fromJson(e))
+            .toList();
       }
       return Future.error(map);
     });

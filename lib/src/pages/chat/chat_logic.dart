@@ -11,6 +11,7 @@ import 'package:flutter_openim_widget/flutter_openim_widget.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:openim_enterprise_chat/src/common/apis.dart';
 import 'package:openim_enterprise_chat/src/core/controller/im_controller.dart';
 import 'package:openim_enterprise_chat/src/models/contacts_info.dart';
 import 'package:openim_enterprise_chat/src/pages/select_contacts/select_contacts_logic.dart';
@@ -84,24 +85,25 @@ class ChatLogic extends GetxController {
   var listViewKey = '1124'.obs;
   var _isFirstLoad = true;
   var _lastCursorIndex = -1;
+  var onlineStatus = false.obs;
+  var onlineStatusDesc = ''.obs;
+  Timer? onlineStatusTimer;
 
   bool isCurrentChat(Message message) {
     var senderId = message.sendID;
+    var receiverId = message.recvID;
     var groupId = message.groupID;
     var sessionType = message.sessionType;
-    var isCurSingleChat = sessionType == 1 && isSingleChat && senderId == uid;
+    var isCurSingleChat = sessionType == 1 &&
+        isSingleChat &&
+        (senderId == uid ||
+            // 其他端当前登录用户向uid发送的消息
+            senderId == OpenIM.iMManager.uid && receiverId == uid);
     var isCurGroupChat = sessionType == 2 && isGroupChat && gid == groupId;
     return isCurSingleChat || isCurGroupChat;
   }
 
   void scrollBottom() {
-    // var index = messageList.length - 1;
-    // if (index > 0)
-    //   // todo
-    //   Future.delayed(Duration(milliseconds: 400), () {
-    //     autoCtrl.scrollToIndex(index /*,duration: Duration(milliseconds: 1)*/);
-    //   });
-    print('---------------offset---------${autoCtrl.offset}');
     // 重置listview替代滚动效果
     if (autoCtrl.offset != 0) {
       listViewKey.value = _uuid.v4();
@@ -123,6 +125,8 @@ class ChatLogic extends GetxController {
     gid = arguments['gid'];
     name.value = arguments['name'];
     icon.value = arguments['icon'];
+    // 获取在线状态
+    _startQueryOnlineStatus();
     // 新增消息监听
     imLogic.onRecvNewMessage = (Message message) {
       // 如果是当前窗口的消息
@@ -160,7 +164,6 @@ class ChatLogic extends GetxController {
       messageList.removeWhere((e) => e.clientMsgID == msgId);
     };
     // 消息已读回执监听
-    var refresh = false;
     imLogic.onRecvC2CReadReceipt = (List<HaveReadInfo> list) {
       try {
         // var info = list.firstWhere((read) => read.uid == uid);
@@ -168,19 +171,13 @@ class ChatLogic extends GetxController {
           if (readInfo.uid == uid) {
             messageList.forEach((e) {
               if (readInfo.msgIDList?.contains(e.clientMsgID) == true) {
-                print('===============have read clientMsgID:${e.clientMsgID}');
                 e.isRead = true;
-                // refresh = true;
               }
             });
             messageList.refresh();
           }
         });
       } catch (e) {}
-      // if (refresh) {
-      //   refresh = false;
-      //   messageList.refresh();
-      // }
     };
     // 消息发送进度
     imLogic.onMsgSendProgress = (String msgId, int progress) {
@@ -328,7 +325,7 @@ class ChatLogic extends GetxController {
   /// 发送图片
   void sendPicture({required String path}) async {
     var message =
-    await OpenIM.iMManager.messageManager.createImageMessageFromFullPath(
+        await OpenIM.iMManager.messageManager.createImageMessageFromFullPath(
       imagePath: path,
     );
     _sendMessage(message);
@@ -337,7 +334,7 @@ class ChatLogic extends GetxController {
   /// 发送语音
   void sendVoice({required int duration, required String path}) async {
     var message =
-    await OpenIM.iMManager.messageManager.createSoundMessageFromFullPath(
+        await OpenIM.iMManager.messageManager.createSoundMessageFromFullPath(
       soundPath: path,
       duration: duration,
     );
@@ -352,7 +349,7 @@ class ChatLogic extends GetxController {
     required String thumbnailPath,
   }) async {
     var message =
-    await OpenIM.iMManager.messageManager.createVideoMessageFromFullPath(
+        await OpenIM.iMManager.messageManager.createVideoMessageFromFullPath(
       videoPath: videoPath,
       videoType: mimeType,
       duration: duration,
@@ -364,7 +361,7 @@ class ChatLogic extends GetxController {
   /// 发送文件
   void sendFile({required String filePath, required String fileName}) async {
     var message =
-    await OpenIM.iMManager.messageManager.createFileMessageFromFullPath(
+        await OpenIM.iMManager.messageManager.createFileMessageFromFullPath(
       filePath: filePath,
       fileName: fileName,
     );
@@ -454,10 +451,10 @@ class ChatLogic extends GetxController {
     _reset();
     OpenIM.iMManager.messageManager
         .sendMessage(
-      message: message,
-      userID: userId ?? uid,
-      groupID: groupId ?? gid,
-    )
+          message: message,
+          userID: userId ?? uid,
+          groupID: groupId ?? gid,
+        )
         .then((value) => _sendSucceeded(message))
         .catchError((e) => _senFailed(message, e))
         .whenComplete(() => _completed());
@@ -682,7 +679,7 @@ class ChatLogic extends GetxController {
   /// 名片
   void onTapCarte() async {
     var result =
-    await AppNavigator.startSelectContacts(action: SelAction.CARTE);
+        await AppNavigator.startSelectContacts(action: SelAction.CARTE);
     if (null != result) {
       sendCarte(
         uid: result['uId'],
@@ -755,7 +752,7 @@ class ChatLogic extends GetxController {
       AppNavigator.startFriendInfo(info: info);
     } else if (msg.contentType == MessageType.merger) {
       Get.to(
-            () => PreviewMergeMsg(
+        () => PreviewMergeMsg(
           title: msg.mergeElem!.title!,
           messageList: msg.mergeElem!.multiMessage!,
         ),
@@ -765,11 +762,11 @@ class ChatLogic extends GetxController {
       var location = msg.locationElem;
       Map detail = json.decode(location!.description!);
       Get.to(() => MapView(
-        latitude: location.latitude!,
-        longitude: location.longitude!,
-        addr1: detail['name'],
-        addr2: detail['addr'],
-      ));
+            latitude: location.latitude!,
+            longitude: location.longitude!,
+            addr1: detail['name'],
+            addr2: detail['addr'],
+          ));
     }
   }
 
@@ -930,6 +927,7 @@ class ChatLogic extends GetxController {
     msgSendStatusSubject.close();
     msgSendProgressSubject.close();
     downloadProgressSubject.close();
+    onlineStatusTimer?.cancel();
     super.onClose();
   }
 
@@ -975,15 +973,15 @@ class ChatLogic extends GetxController {
   /// 删除表情
   void onDeleteEmoji() {
     final input = inputCtrl.text;
-    final emojiPattern = emojiFaces.keys
+    final regexEmoji = emojiFaces.keys
         .toList()
         .join('|')
         .replaceAll('[', '\\[')
         .replaceAll(']', '\\]');
-    final list = [atPattern, emojiPattern];
+    final list = [regexAt, regexEmoji];
     final pattern = '(${list.toList().join('|')})';
-    final atReg = RegExp(atPattern);
-    final emojiReg = RegExp(emojiPattern);
+    final atReg = RegExp(regexAt);
+    final emojiReg = RegExp(regexEmoji);
     var reg = RegExp(pattern);
     if (reg.hasMatch(input)) {
       var match = reg.allMatches(inputCtrl.text).last;
@@ -1012,4 +1010,53 @@ class ChatLogic extends GetxController {
     }
     _lastCursorIndex = inputCtrl.text.length;
   }
+
+  /// 用户在线状态
+  void _getOnlineStatus(List<String> uidList) {
+    Apis.onlineStatus(uidList: uidList).then((list) {
+      list.forEach((e) {
+        if (e.status == 'online') {
+          // IOSPlatformStr     = "IOS"
+          // AndroidPlatformStr = "Android"
+          // WindowsPlatformStr = "Windows"
+          // OSXPlatformStr     = "OSX"
+          // WebPlatformStr     = "Web"
+          // MiniWebPlatformStr = "MiniWeb"
+          // LinuxPlatformStr   = "Linux"
+          final pList = <String>[];
+          for (var platform in e.detailPlatformStatus!) {
+            if (platform.platform == "Android" || platform.platform == "IOS") {
+              pList.add(StrRes.phoneOnline);
+            } else if (platform.platform == "Windows") {
+              pList.add(StrRes.pcOnline);
+            } else if (platform.platform == "Web") {
+              pList.add(StrRes.webOnline);
+            } else if (platform.platform == "MiniWeb") {
+              pList.add(StrRes.webMiniOnline);
+            } /* else {
+              onlineStatus[e.userID!] = StrRes.online;
+            }*/
+          }
+          onlineStatusDesc.value = '${pList.join('/')}${StrRes.online}';
+          onlineStatus.value = true;
+        } else {
+          onlineStatusDesc.value = StrRes.offline;
+          onlineStatus.value = false;
+        }
+      });
+    });
+  }
+
+  void _startQueryOnlineStatus() {
+    if (null != uid && uid!.isNotEmpty && onlineStatusTimer == null) {
+      _getOnlineStatus([uid!]);
+      onlineStatusTimer = Timer.periodic(Duration(seconds: 5), (timer) {
+        _getOnlineStatus([uid!]);
+      });
+    }
+  }
+
+  String getSubTile() => typing.value ? StrRes.typing : onlineStatusDesc.value;
+
+  bool showOnlineStatus() => !typing.value && onlineStatusDesc.isNotEmpty;
 }

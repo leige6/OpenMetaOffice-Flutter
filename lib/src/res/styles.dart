@@ -23,6 +23,7 @@ class PageStyle {
   static const c_898989 = Color(0xFF898989);
   static const c_418AE5 = Color(0xFF418AE5);
   static const c_10CC64 = Color(0xFF10CC64);
+  static const c_959595 = Color(0xFF959595);
 
   static var c_D8D8D8_opacity40p = Color(0xFFD8D8D8).withOpacity(0.4);
   static var c_000000_opacity40p = Color(0xFF000000).withOpacity(0.4);

@@ -69,6 +69,11 @@ class ContactsLogic extends GetxController {
         frequentContacts.refresh();
       } catch (e) {}
     });
+
+    imLogic.friendDelSubject.listen((user) {
+      frequentContacts.removeWhere((e) => e.uid == user.uid);
+      putFrequentContacts();
+    });
     super.onInit();
   }
 
@@ -115,7 +120,9 @@ class ContactsLogic extends GetxController {
   void getFrequentContacts() async {
     var uidList = DataPersistence.getFrequentContacts();
     if (uidList != null && uidList.isNotEmpty) {
-      var list = await OpenIM.iMManager.getUsersInfo(uidList);
+      var list = await OpenIM.iMManager.friendshipManager.getFriendsInfo(
+        uidList: uidList,
+      );
       frequentContacts.assignAll(list);
     }
   }

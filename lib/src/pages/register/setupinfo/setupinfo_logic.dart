@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
@@ -15,7 +14,7 @@ import 'package:openim_enterprise_chat/src/widgets/loading_view.dart';
 
 class SetupSelfInfoLogic extends GetxController {
   var imLogic = Get.find<IMController>();
-  // var callLogic = Get.find<CallController>();
+  var callLogic = Get.find<CallController>();
   var jPushLogic = Get.find<JPushController>();
   var nameCtrl = TextEditingController();
   var showNameClearBtn = false.obs;
@@ -73,7 +72,7 @@ class SetupSelfInfoLogic extends GetxController {
     await syncSelfInfo(uid);
     await adminOperate(uid);
     print('---------im login success-------');
-    // await callLogic.login(uid, token);
+    await callLogic.login(uid, token);
     print('---------ion login success------');
     jPushLogic.login(uid);
     print('---------jpush login success----');

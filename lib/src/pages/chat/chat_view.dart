@@ -80,7 +80,12 @@ class ChatPage extends StatelessWidget {
             onTap: logic.clickLinkText,
           ),
           MatchPattern(
-            type: PatternType.PHONE,
+            type: PatternType.MOBILE,
+            style: PageStyle.ts_1B72EC_14sp,
+            onTap: logic.clickLinkText,
+          ),
+          MatchPattern(
+            type: PatternType.TEL,
             style: PageStyle.ts_1B72EC_14sp,
             onTap: logic.clickLinkText,
           ),
@@ -99,11 +104,13 @@ class ChatPage extends StatelessWidget {
               backgroundColor: PageStyle.c_FFFFFF,
               appBar: EnterpriseTitleBar.chatTitle(
                 title: logic.name.value,
-                subTitle: logic.typing.value ? StrRes.typing : 'xxx技术有限公司',
+                subTitle: logic.getSubTile(),
                 onClickCallBtn: () => logic.call(),
                 onClickMoreBtn: () => logic.chatSetup(),
                 leftButton: logic.multiSelMode.value ? StrRes.cancel : null,
                 onClose: () => logic.exit(),
+                showOnlineStatus: logic.showOnlineStatus(),
+                online: logic.onlineStatus.value,
               ),
               body: SafeArea(
                 child: Column(

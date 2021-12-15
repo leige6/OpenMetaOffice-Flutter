@@ -8,7 +8,7 @@ import 'package:openim_enterprise_chat/src/widgets/im_widget.dart';
 
 class SplashLogic extends GetxController {
   final imLogic = Get.find<IMController>();
-  // final callLogic = Get.find<CallController>();
+  final callLogic = Get.find<CallController>();
   final jPushLogic = Get.find<JPushController>();
 
   var loginCertificate = DataPersistence.getLoginCertificate();
@@ -42,7 +42,7 @@ class SplashLogic extends GetxController {
       print('---------login---------- uid: $uid, token: $token');
       await imLogic.login(uid!, token!);
       print('---------im login success-------');
-      // await callLogic.login(uid!, token!);
+      await callLogic.login(uid!, token!);
       print('---------ion login success------');
       jPushLogic.login(uid!);
       print('---------jpush login success----');

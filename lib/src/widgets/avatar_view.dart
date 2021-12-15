@@ -17,6 +17,7 @@ class AvatarView extends StatelessWidget {
     this.isCircle = true,
     this.borderRadius,
     this.enabledPreview = false,
+    this.lowMemory = false,
   }) : super(key: key);
   final bool visible;
   final double? size;
@@ -28,25 +29,28 @@ class AvatarView extends StatelessWidget {
   final enabledPreview;
   final String? text;
   final TextStyle? textStyle;
+  final bool lowMemory;
 
   @override
   Widget build(BuildContext context) {
     return ChatAvatarView(
-        visible: visible,
-        size: size ?? 42.h,
-        onTap: onTap ??
-            (enabledPreview
-                ? () {
-                    if (url != null && url!.trim().isNotEmpty) {
-                      Get.to(() => IMUtil.previewPic(id: url!, url: url));
-                    }
+      visible: visible,
+      size: size ?? 42.h,
+      onTap: onTap ??
+          (enabledPreview
+              ? () {
+                  if (url != null && url!.trim().isNotEmpty) {
+                    Get.to(() => IMUtil.previewPic(id: url!, url: url));
                   }
-                : null),
-        url: url,
-        text: text,
-        textStyle: textStyle,
-        onLongPress: onLongPress,
-        isCircle: isCircle,
-        borderRadius: borderRadius);
+                }
+              : null),
+      url: url,
+      text: text,
+      textStyle: textStyle,
+      onLongPress: onLongPress,
+      isCircle: isCircle,
+      borderRadius: borderRadius,
+      lowMemory: lowMemory,
+    );
   }
 }

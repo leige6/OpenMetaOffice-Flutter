@@ -334,11 +334,11 @@ class AppPages {
       page: () => CallRecordsPage(),
       binding: CallRecordsBinding(),
     ),
-    // GetPage(
-    //   name: AppRoutes.GROUP_CALL,
-    //   page: () => GroupCallPage(),
-    //   binding: GroupCallBinding(),
-    // ),
+    GetPage(
+      name: AppRoutes.GROUP_CALL,
+      page: () => GroupCallPage(),
+      binding: GroupCallBinding(),
+    ),
     GetPage(
       name: AppRoutes.LANGUAGE_SETUP,
       page: () => SetupLanguagePage(),

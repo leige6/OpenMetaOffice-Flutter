@@ -12,7 +12,7 @@ import 'package:openim_enterprise_chat/src/widgets/loading_view.dart';
 
 class MineLogic extends GetxController {
   final imLogic = Get.find<IMController>();
-  // final callLogic = Get.find<CallController>();
+  final callLogic = Get.find<CallController>();
   final jPushLogic = Get.find<JPushController>();
 
   // Rx<UserInfo>? userInfo;
@@ -55,7 +55,7 @@ class MineLogic extends GetxController {
         await LoadingView.singleton.wrap(asyncFunction: () async {
           await imLogic.logout();
           await DataPersistence.removeLoginCertificate();
-          // await callLogic.logout();
+          await callLogic.logout();
           await jPushLogic.logout();
         });
         AppNavigator.startLogin();
@@ -68,7 +68,7 @@ class MineLogic extends GetxController {
 
   void kickedOffline() async {
     await DataPersistence.removeLoginCertificate();
-    // await callLogic.logout();
+    await callLogic.logout();
     await jPushLogic.logout();
     AppNavigator.startLogin();
   }
@@ -78,10 +78,10 @@ class MineLogic extends GetxController {
     // imLogic.selfInfoUpdatedSubject.listen((value) {
     //   userInfo?.value = value;
     // });
-    imLogic.onKickedOffline = () {
+    imLogic.onKickedOfflineSubject.listen((value) {
+      Get.snackbar(StrRes.accountWarn, StrRes.accountException);
       kickedOffline();
-      Get.snackbar('提示!', '你的账号已在其他设备登录，请及时修改密码。');
-    };
+    });
     super.onInit();
   }
 

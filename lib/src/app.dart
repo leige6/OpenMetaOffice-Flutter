@@ -67,7 +67,7 @@ class InitBinding extends Bindings {
   void dependencies() {
     Get.put<PermissionController>(PermissionController());
     Get.put<IMController>(IMController());
-    // Get.put<CallController>(CallController());
+    Get.put<CallController>(CallController());
     Get.put<JPushController>(JPushController());
     // Get.lazyPut(() => JPushController());
     // Get.lazyPut(() => CallController());

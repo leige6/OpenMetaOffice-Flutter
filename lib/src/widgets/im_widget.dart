@@ -150,13 +150,13 @@ class IMWidget {
             icon: ImageRes.ic_callVoice,
             alignment: MainAxisAlignment.start,
             onTap: () {
-              // IMCallView.call(
-              //   uid: uid,
-              //   name: name,
-              //   icon: icon,
-              //   state: CallState.CALL,
-              //   type: 'voice',
-              // );
+              IMCallView.call(
+                uid: uid,
+                name: name,
+                icon: icon,
+                state: CallState.CALL,
+                type: 'voice',
+              );
             },
           ),
           SheetItem(
@@ -164,13 +164,13 @@ class IMWidget {
             icon: ImageRes.ic_callVideo,
             alignment: MainAxisAlignment.start,
             onTap: () {
-              // IMCallView.call(
-              //   uid: uid,
-              //   name: name,
-              //   icon: icon,
-              //   state: CallState.CALL,
-              //   type: 'video',
-              // );
+              IMCallView.call(
+                uid: uid,
+                name: name,
+                icon: icon,
+                state: CallState.CALL,
+                type: 'video',
+              );
             },
           ),
         ],
@@ -214,13 +214,13 @@ class IMWidget {
     );
     if (result != null) {
       List<String> uidList = result;
-      // AppNavigator.startGroupCall(
-      //   gid: gid,
-      //   senderUid: OpenIM.iMManager.uid,
-      //   receiverIds: uidList,
-      //   type: streamType,
-      //   state: CallState.CALL,
-      // );
+      AppNavigator.startGroupCall(
+        gid: gid,
+        senderUid: OpenIM.iMManager.uid,
+        receiverIds: uidList,
+        type: streamType,
+        state: CallState.CALL,
+      );
     }
   }
 
@@ -247,5 +247,27 @@ class IMWidget {
     ));
     if (null == result) return null;
     return (result as CountryCode).dialCode;
+  }
+
+  static void openNoDisturbSettingSheet(
+      {bool isGroup = false, Function(int index)? onTap}) {
+    Get.bottomSheet(
+      BottomSheetView(
+        items: [
+          SheetItem(
+            label: StrRes.receiveMessageButNotPrompt,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
+            ),
+            onTap: () => onTap?.call(0),
+          ),
+          SheetItem(
+            label: isGroup ? StrRes.blockGroupMessages : StrRes.blockFriends,
+            onTap: () => onTap?.call(1),
+          ),
+        ],
+      ),
+    );
   }
 }
