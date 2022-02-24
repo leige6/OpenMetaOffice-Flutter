@@ -38,8 +38,9 @@ class Apis {
         'email': email,
         'password': IMUtil.generateMD5(password),
         'platform': _platform,
+        'operationID': _getOperationID(),
       });
-      return LoginCertificate.fromJson(data);
+      return LoginCertificate.fromJson(data!);
     } catch (e) {
       print('e:$e');
       // var error = e as DioError;
@@ -53,9 +54,10 @@ class Apis {
       var data = await HttpUtil.post(Urls.login2, data: {
         'secret': Config.secret,
         'platform': _platform,
-        'uid': uid,
+        'userID': uid,
+        'operationID': _getOperationID(),
       });
-      return LoginCertificate.fromJson(data);
+      return LoginCertificate.fromJson(data!);
     } catch (e) {
       print('e:$e');
       // var error = e as DioError;
@@ -65,7 +67,7 @@ class Apis {
   }
 
   /// register
-  static Future<LoginCertificate> register({
+  static Future<LoginCertificate> setPassword({
     String? areaCode,
     String? phoneNumber,
     String? email,
@@ -73,20 +75,41 @@ class Apis {
     required String verificationCode,
   }) async {
     try {
-      var data = await HttpUtil.post(Urls.register, data: {
+      var data = await HttpUtil.post(Urls.setPwd, data: {
         "areaCode": areaCode,
         'phoneNumber': phoneNumber,
         'email': email,
         'password': IMUtil.generateMD5(password),
         'verificationCode': verificationCode,
+        'platform': Platform.isAndroid ? IMPlatform.android : IMPlatform.ios,
+        'operationID': _getOperationID(),
       });
-      return LoginCertificate.fromJson(data);
+      return LoginCertificate.fromJson(data!);
     } catch (e) {
       print('e:$e');
       // var error = e as DioError;
       // IMWidget.showToast('注册失败，请联系管理员:${error.response}');
       return Future.error(e);
     }
+  }
+
+  /// reset password
+  static Future<dynamic> resetPassword({
+    String? areaCode,
+    String? phoneNumber,
+    String? email,
+    required String password,
+    required String verificationCode,
+  }) {
+    return HttpUtil.post(Urls.resetPwd, data: {
+      "areaCode": areaCode,
+      'phoneNumber': phoneNumber,
+      'email': email,
+      'newPassword': IMUtil.generateMD5(password),
+      'verificationCode': verificationCode,
+      'platform': Platform.isAndroid ? IMPlatform.android : IMPlatform.ios,
+      'operationID': _getOperationID(),
+    });
   }
 
   static Future<bool> register2(
@@ -97,6 +120,7 @@ class Apis {
         'platform': _platform,
         'uid': uid,
         'name': name,
+        'operationID': _getOperationID(),
       });
       return true;
     } catch (e) {
@@ -108,10 +132,12 @@ class Apis {
   }
 
   /// 获取验证码
+  /// [usedFor] 1：注册，2：重置密码
   static Future<bool> requestVerificationCode({
     String? areaCode,
     String? phoneNumber,
     String? email,
+    required int usedFor,
   }) async {
     return HttpUtil.post(
       Urls.getVerificationCode,
@@ -119,6 +145,8 @@ class Apis {
         "areaCode": areaCode,
         "phoneNumber": phoneNumber,
         "email": email,
+        'operationID': _getOperationID(),
+        'usedFor': usedFor,
       },
     ).then((value) {
       IMWidget.showToast(StrRes.sentSuccessfully);
@@ -137,6 +165,7 @@ class Apis {
     String? phoneNumber,
     String? email,
     required String verificationCode,
+    required int usedFor,
   }) {
     return HttpUtil.post(
       Urls.checkVerificationCode,
@@ -145,6 +174,8 @@ class Apis {
         "areaCode": areaCode,
         "email": email,
         "verificationCode": verificationCode,
+        "usedFor": usedFor,
+        'operationID': _getOperationID(),
       },
     );
   }
@@ -159,7 +190,7 @@ class Apis {
         data: {
           "uidList": openIMMemberIDS,
           "ownerUid": uid,
-          "operationID": "1111111111111",
+          'operationID': _getOperationID(),
         },
         options: Options(headers: {'token': token}),
       );
@@ -180,7 +211,7 @@ class Apis {
           "groupID": openIMGroupID,
           "uidList": [uid],
           "reason": "Welcome join openim group",
-          "operationID": "1111111111111"
+          'operationID': _getOperationID(),
         },
         options: Options(headers: {'token': token}),
       );
@@ -210,20 +241,115 @@ class Apis {
     });
   }
 
-  static Future<List<OnlineStatus>> onlineStatus(
-      {required List<String> uidList}) {
-    return dio.post<Map<String, dynamic>>(Urls.onlineStatus, data: {
-      "operationID": "sdfasfasfdasfda",
-      "secret": Config.secret,
-      "userIDList": uidList
-    }).then((resp) {
+  static Future<List<OnlineStatus>> _onlineStatus({
+    required List<String> uidList,
+    required String token,
+  }) async {
+    return dio
+        .post<Map<String, dynamic>>(Urls.onlineStatus,
+            data: {
+              'operationID': _getOperationID(),
+              "secret": Config.secret,
+              "userIDList": uidList,
+            },
+            options: Options(headers: {'token': token}))
+        .then((resp) {
       Map<String, dynamic> map = resp.data!;
       if (map['errCode'] == 0) {
-        return (map['successResult'] as List)
+        return (map['data'] as List)
             .map((e) => OnlineStatus.fromJson(e))
             .toList();
       }
       return Future.error(map);
     });
+  }
+
+  /// 每次最多查询200条
+  static void queryOnlineStatus({
+    required List<String> uidList,
+    Function(Map<String, String>)? onlineStatusDescCallback,
+    Function(Map<String, bool>)? onlineStatusCallback,
+  }) async {
+    if (uidList.isEmpty) return;
+    var data = await Apis.login2('openIM123456');
+    var batch = uidList.length ~/ 200;
+    var remainder = uidList.length % 200;
+    var i = 0;
+    var subList;
+    if (batch > 0) {
+      for (; i < batch; i++) {
+        subList = uidList.sublist(i * 200, 200 * (i + 1));
+        Apis._onlineStatus(uidList: subList, token: data.token)
+            .then((list) => _handleStatus(
+                  list,
+                  onlineStatusCallback: onlineStatusCallback,
+                  onlineStatusDescCallback: onlineStatusDescCallback,
+                ));
+      }
+    }
+    if (remainder > 0) {
+      if (i > 0) {
+        subList = uidList.sublist(i * 200, 200 * i + remainder);
+        Apis._onlineStatus(uidList: subList, token: data.token)
+            .then((list) => _handleStatus(
+                  list,
+                  onlineStatusCallback: onlineStatusCallback,
+                  onlineStatusDescCallback: onlineStatusDescCallback,
+                ));
+      } else {
+        subList = uidList.sublist(0, remainder);
+        Apis._onlineStatus(uidList: subList, token: data.token)
+            .then((list) => _handleStatus(
+                  list,
+                  onlineStatusCallback: onlineStatusCallback,
+                  onlineStatusDescCallback: onlineStatusDescCallback,
+                ));
+      }
+    }
+  }
+
+  static _handleStatus(
+    List<OnlineStatus> list, {
+    Function(Map<String, String>)? onlineStatusDescCallback,
+    Function(Map<String, bool>)? onlineStatusCallback,
+  }) {
+    final statusDesc = <String, String>{};
+    final status = <String, bool>{};
+    list.forEach((e) {
+      if (e.status == 'online') {
+        // IOSPlatformStr     = "IOS"
+        // AndroidPlatformStr = "Android"
+        // WindowsPlatformStr = "Windows"
+        // OSXPlatformStr     = "OSX"
+        // WebPlatformStr     = "Web"
+        // MiniWebPlatformStr = "MiniWeb"
+        // LinuxPlatformStr   = "Linux"
+        final pList = <String>[];
+        for (var platform in e.detailPlatformStatus!) {
+          if (platform.platform == "Android" || platform.platform == "IOS") {
+            pList.add(StrRes.phoneOnline);
+          } else if (platform.platform == "Windows") {
+            pList.add(StrRes.pcOnline);
+          } else if (platform.platform == "Web") {
+            pList.add(StrRes.webOnline);
+          } else if (platform.platform == "MiniWeb") {
+            pList.add(StrRes.webMiniOnline);
+          } else {
+            statusDesc[e.userID!] = StrRes.online;
+          }
+        }
+        statusDesc[e.userID!] = '${pList.join('/')}${StrRes.online}';
+        status[e.userID!] = true;
+      } else {
+        statusDesc[e.userID!] = StrRes.offline;
+        status[e.userID!] = false;
+      }
+    });
+    onlineStatusDescCallback?.call(statusDesc);
+    onlineStatusCallback?.call(status);
+  }
+
+  static String _getOperationID() {
+    return DateTime.now().millisecondsSinceEpoch.toString();
   }
 }

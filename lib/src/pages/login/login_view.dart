@@ -87,6 +87,7 @@ class LoginPage extends StatelessWidget {
                   top: 419.h,
                   left: 40.w,
                   child: GestureDetector(
+                    onTap: logic.forgetPassword,
                     behavior: HitTestBehavior.translucent,
                     child: Text(
                       StrRes.forgetPwd,
@@ -117,15 +118,9 @@ class LoginPage extends StatelessWidget {
                     // your tap handler moved here
                     builder: (context, onTap) {
                       return Obx(() => Button(
-                            textStyle: logic.enabledLoginButton.value
-                                ? PageStyle.ts_FFFFFF_18sp
-                                : PageStyle.ts_898989_18sp,
+                            enabled: logic.enabledLoginButton.value,
                             text: StrRes.login,
-                            background: logic.enabledLoginButton.value
-                                ? PageStyle.c_1D6BED
-                                : PageStyle.c_D8D8D8,
-                            onTap:
-                                logic.enabledLoginButton.value ? onTap : null,
+                            onTap: onTap,
                           ));
                     },
                   ),
@@ -147,18 +142,13 @@ class LoginPage extends StatelessWidget {
                   width: 375.w,
                   // left: 48.w,
                   // width: 295.w,
-                  child: Obx(() => Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ProtocolView(
-                            isChecked: logic.agreedProtocol.value,
-                            radioStyle: RadioStyle.BLUE,
-                            onTap: () => logic.toggleProtocol(),
-                            margin: EdgeInsets.only(/*left: 48.w, */ top: 19.h),
-                            style1: PageStyle.ts_333333_12sp,
-                            style2: PageStyle.ts_1D6BED_12sp,
-                          )
-                        ],
+                  child: Obx(() => ProtocolView(
+                        isChecked: logic.agreedProtocol.value,
+                        radioStyle: RadioStyle.BLUE,
+                        onTap: () => logic.toggleProtocol(),
+                        margin: EdgeInsets.only(top: 19.h),
+                        style1: PageStyle.ts_333333_12sp,
+                        style2: PageStyle.ts_1D6BED_12sp,
                       )),
                 )
               ],

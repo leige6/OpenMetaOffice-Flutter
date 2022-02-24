@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: cn.jiguang.sdk.plugin:huawei:4.4.5@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/4cb757e4289abc4de4f5c5bd10c70ce0/jetified-huawei-4.4.5/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/4cb757e4289abc4de4f5c5bd10c70ce0/jetified-huawei-4.4.5/jars/libs/jpush-android-plugin-huawei-v4.4.5.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/4cb757e4289abc4de4f5c5bd10c70ce0/jetified-huawei-4.4.5/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/4cb757e4289abc4de4f5c5bd10c70ce0/jetified-huawei-4.4.5/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/cn.jiguang.sdk.plugin/huawei/4.4.5/423b86753b6e89ec876d0898665feee7998afeff/huawei-4.4.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

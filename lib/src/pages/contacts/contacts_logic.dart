@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
 import 'package:get/get.dart';
+import 'package:openim_enterprise_chat/src/common/apis.dart';
 import 'package:openim_enterprise_chat/src/core/controller/im_controller.dart';
 import 'package:openim_enterprise_chat/src/routes/app_navigator.dart';
 import 'package:openim_enterprise_chat/src/utils/data_persistence.dart';
@@ -10,6 +13,8 @@ class ContactsLogic extends GetxController {
   var friendApplicationCount = 0.obs;
   var groupApplicationCount = 0.obs;
   var frequentContacts = <UserInfo>[].obs;
+  var onlineStatusDesc = <String, String>{}.obs;
+  Timer? _onlineStatusTimer;
 
   @override
   void onInit() {
@@ -38,9 +43,9 @@ class ContactsLogic extends GetxController {
       list.forEach((e) {
         if (e.isSingleChat) {
           var u = UserInfo(
-            uid: e.userID!,
-            name: e.showName,
-            icon: e.faceUrl,
+            userID: e.userID!,
+            nickname: e.showName,
+            faceURL: e.faceURL,
           );
           uList.add(u);
         }
@@ -60,18 +65,17 @@ class ContactsLogic extends GetxController {
 
     imLogic.friendInfoChangedSubject.listen((value) {
       try {
-        var u = frequentContacts.firstWhere((e) => e.uid == value.uid);
-        u.name = value.name;
-        u.icon = value.icon;
-        u.comment = value.comment;
-        u.mobile = value.mobile;
-        u.flag = value.flag;
+        var u = frequentContacts.firstWhere((e) => e.userID == value.userID);
+        u.nickname = value.nickname;
+        u.faceURL = value.faceURL;
+        u.remark = value.remark;
+        u.phoneNumber = value.phoneNumber;
         frequentContacts.refresh();
       } catch (e) {}
     });
 
     imLogic.friendDelSubject.listen((user) {
-      frequentContacts.removeWhere((e) => e.uid == user.uid);
+      frequentContacts.removeWhere((e) => e.userID == user.userID);
       putFrequentContacts();
     });
     super.onInit();
@@ -124,11 +128,13 @@ class ContactsLogic extends GetxController {
         uidList: uidList,
       );
       frequentContacts.assignAll(list);
+      _checkOnlineStatus();
+      _startOnlineStatusTimer();
     }
   }
 
   void putFrequentContacts() {
-    var uidList = frequentContacts.map((e) => e.uid);
+    var uidList = frequentContacts.map((e) => e.userID!);
     if (uidList.length > 15) {
       DataPersistence.putFrequentContacts(uidList.take(15).toList());
     } else {
@@ -156,7 +162,25 @@ class ContactsLogic extends GetxController {
 
   @override
   void onClose() {
-    // TODO: implement onClose
+    _onlineStatusTimer?.cancel();
     super.onClose();
   }
+
+  void viewOrganization() {
+    AppNavigator.startOrganization();
+  }
+
+  void _startOnlineStatusTimer() {
+    _onlineStatusTimer?.cancel();
+    _onlineStatusTimer = null;
+    _onlineStatusTimer = Timer.periodic(
+      Duration(seconds: 10),
+      (timer) => _checkOnlineStatus(),
+    );
+  }
+
+  void _checkOnlineStatus() => Apis.queryOnlineStatus(
+        uidList: frequentContacts.map((e) => e.userID!).toList(),
+        onlineStatusDescCallback: (map) => onlineStatusDesc.addAll(map),
+      );
 }

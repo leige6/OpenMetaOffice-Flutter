@@ -15,7 +15,7 @@ class SplashLogic extends GetxController {
 
   bool get isExistLoginCertificate => loginCertificate != null;
 
-  String? get uid => loginCertificate?.uid;
+  String? get uid => loginCertificate?.userID;
 
   String? get token => loginCertificate?.token;
 

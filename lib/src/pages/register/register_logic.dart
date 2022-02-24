@@ -25,6 +25,7 @@ class RegisterLogic extends GetxController {
       areaCode: areaCode.value,
       phoneNumber: isPhoneRegister ? controller.text : null,
       email: !isPhoneRegister ? controller.text : null,
+      usedFor: 1,
     );
   }
 

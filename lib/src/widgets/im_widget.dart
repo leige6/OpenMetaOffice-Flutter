@@ -35,6 +35,8 @@ class IMWidget {
     bool crop = true,
     bool toUrl = true,
     bool isAvatar = false,
+    bool fromGallery = true,
+    bool fromCamera = true,
     Function(int? index)? onIndexAvatar,
   }) {
     Get.bottomSheet(
@@ -52,48 +54,50 @@ class IMWidget {
                 onIndexAvatar?.call(index);
               },
             ),
-          SheetItem(
-            label: StrRes.album,
-            borderRadius: isAvatar
-                ? null
-                : BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  ),
-            onTap: () {
-              PermissionUtil.storage(() async {
-                final XFile? image = await _picker.pickImage(
-                  source: ImageSource.gallery,
-                );
-                if (null != image?.path) {
-                  var map = await _uCropPic(
-                    image!.path,
-                    crop: crop,
-                    toUrl: toUrl,
+          if (fromGallery)
+            SheetItem(
+              label: StrRes.album,
+              borderRadius: isAvatar
+                  ? null
+                  : BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30),
+                    ),
+              onTap: () {
+                PermissionUtil.storage(() async {
+                  final XFile? image = await _picker.pickImage(
+                    source: ImageSource.gallery,
                   );
-                  onData?.call(map['path'], map['url']);
-                }
-              });
-            },
-          ),
-          SheetItem(
-            label: StrRes.camera,
-            onTap: () {
-              PermissionUtil.camera(() async {
-                final XFile? image = await _picker.pickImage(
-                  source: ImageSource.camera,
-                );
-                if (null != image?.path) {
-                  var map = await _uCropPic(
-                    image!.path,
-                    crop: crop,
-                    toUrl: toUrl,
+                  if (null != image?.path) {
+                    var map = await _uCropPic(
+                      image!.path,
+                      crop: crop,
+                      toUrl: toUrl,
+                    );
+                    onData?.call(map['path'], map['url']);
+                  }
+                });
+              },
+            ),
+          if (fromCamera)
+            SheetItem(
+              label: StrRes.camera,
+              onTap: () {
+                PermissionUtil.camera(() async {
+                  final XFile? image = await _picker.pickImage(
+                    source: ImageSource.camera,
                   );
-                  onData?.call(map['path'], map['url']);
-                }
-              });
-            },
-          ),
+                  if (null != image?.path) {
+                    var map = await _uCropPic(
+                      image!.path,
+                      crop: crop,
+                      toUrl: toUrl,
+                    );
+                    onData?.call(map['path'], map['url']);
+                  }
+                });
+              },
+            ),
         ],
       ),
     );

@@ -69,11 +69,11 @@ class ChatSetupLogic extends GetxController {
   }
 
   void getConversationInfo() async {
-    info = await OpenIM.iMManager.conversationManager.getSingleConversation(
+    info = await OpenIM.iMManager.conversationManager.getOneConversation(
       sourceID: uid!,
       sessionType: 1,
     );
-    topContacts.value = info!.isPinned == 1;
+    topContacts.value = info!.isPinned!;
   }
 
   /// 消息免打扰

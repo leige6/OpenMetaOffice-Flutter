@@ -256,6 +256,7 @@ class CallLogic {
     callCtrl.onStateChanged = (state_) {
       print('-----------CallLogic listen---$state_-----------------');
       state.value = state_;
+      callCtrl.sendCallMessage(state_, uid, type.value);
       switch (state_) {
         case CallState.CANCEL:
         case CallState.BE_CANCELED:
@@ -291,7 +292,6 @@ class CallLogic {
 
   void toggleWindowSize() {
     smallView.value = !smallView.value;
-    print('---------------------smallView:${smallView.value}');
   }
 
   void updateXY(double dx, double dy) {

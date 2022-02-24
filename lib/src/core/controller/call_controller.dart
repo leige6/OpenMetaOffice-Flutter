@@ -1,15 +1,18 @@
 import 'package:flutter_ion/flutter_ion.dart';
 import 'package:flutter_ion/src/_library/apps/biz/proto/biz.pbenum.dart';
-import 'package:flutter_openim_sdk/flutter_openim_sdk.dart';
+import 'package:flutter_openim_sdk/flutter_openim_sdk.dart' as im;
+import 'package:flutter_openim_widget/flutter_openim_widget.dart';
 import 'package:flutter_webrtc/src/helper.dart';
 import 'package:get/get.dart';
 import 'package:grpc/grpc.dart' as grpc;
 import 'package:openim_enterprise_chat/src/core/rtc/config.dart';
 import 'package:openim_enterprise_chat/src/core/rtc/participant.dart';
 import 'package:openim_enterprise_chat/src/routes/app_navigator.dart';
+import 'package:openim_enterprise_chat/src/sdk_extension/message_manager.dart';
 import 'package:openim_enterprise_chat/src/utils/countdown.dart';
 import 'package:openim_enterprise_chat/src/utils/im_util.dart';
 import 'package:openim_enterprise_chat/src/widgets/call_view.dart';
+import 'package:rxdart/rxdart.dart';
 
 enum CallState {
   CALL, // 主动邀请
@@ -26,6 +29,7 @@ enum CallState {
 }
 
 class CallController extends GetxController {
+  final callMessageSubject = PublishSubject<Map<String, im.Message>>();
   IonBaseConnector? _connector;
   IonAppBiz? _biz;
   IonSDKSFU? _sfu;
@@ -80,6 +84,7 @@ class CallController extends GetxController {
 
   @override
   void onClose() {
+    callMessageSubject.close();
     close();
     super.onClose();
   }
@@ -208,11 +213,12 @@ class CallController extends GetxController {
             _isBusy = true;
             _stateChanged(CallState.CALLED);
             if (event.sessionType == SessionType.Single) {
-              var list = await OpenIM.iMManager.getUsersInfo([senderUid]);
+              var list = await im.OpenIM.iMManager.userManager
+                  .getUsersInfo(uidList: [senderUid]);
               IMCallView.call(
                 uid: senderUid,
                 name: list[0].getShowName(),
-                icon: list[0].icon,
+                icon: list[0].faceURL,
                 state: CallState.CALLED,
                 type: streamType == StreamType.Voice ? 'voice' : 'video',
               );
@@ -235,8 +241,8 @@ class CallController extends GetxController {
               sid: rid = receiveUid + senderUid,
               uid: uid,
               info: {
-                "name": OpenIM.iMManager.uInfo.getShowName(),
-                "icon": OpenIM.iMManager.uInfo.icon,
+                "name": im.OpenIM.iMManager.uInfo.getShowName(),
+                "icon": im.OpenIM.iMManager.uInfo.faceURL,
               },
             );
           }
@@ -340,8 +346,8 @@ class CallController extends GetxController {
     this.sessionType = sessionType;
     this.receiverUidList = receiverIds;
     var info = {
-      "name": OpenIM.iMManager.uInfo.getShowName(),
-      "icon": OpenIM.iMManager.uInfo.icon,
+      "name": im.OpenIM.iMManager.uInfo.getShowName(),
+      "icon": im.OpenIM.iMManager.uInfo.faceURL,
     };
     switch (operation) {
       case MediaOperation.Dial:
@@ -406,7 +412,7 @@ class CallController extends GetxController {
     localVideoEnabled.value = true;
     localStreamCreated.value = false;
     callingTime.value = "00:00:00";
-    callingDuration = 0;
+    // callingDuration = 0;
     _dialDurationTimer?.cancel();
     _callingTimer?.cancel();
     // _heartTimer?.cancel();
@@ -458,7 +464,7 @@ class CallController extends GetxController {
     _heartTimer = CountdownTimer.periodic(
       Duration(seconds: 5),
       (timer, count) {
-        if (OpenIM.iMManager.isLogined) {
+        if (im.OpenIM.iMManager.isLogined) {
           _biz?.heart(uid);
           if (_heartFlag) {
             _heartFlag = false;
@@ -559,6 +565,47 @@ class CallController extends GetxController {
     if (null != localStream) {
       localStream!.renderer.srcObject!.getVideoTracks()[0].enabled =
           localVideoEnabled.value;
+    }
+  }
+
+  /// 自定义通话消息
+  void sendCallMessage(CallState state, String uid, String type) async {
+    var receiver;
+    var sender;
+    switch (state) {
+      case CallState.HANGUP:
+      case CallState.CANCEL:
+      case CallState.REJECT:
+        {
+          sender = im.OpenIM.iMManager.uid;
+          receiver = uid;
+          break;
+        }
+      case CallState.BE_HANGUP:
+      case CallState.BE_CANCELED:
+      case CallState.BE_REJECTED:
+        {
+          sender = uid;
+          receiver = im.OpenIM.iMManager.uid;
+          break;
+        }
+      default:
+        break;
+    }
+
+    if (receiver != null) {
+      var message = await OpenIM.iMManager.messageManager.createCallMessage(
+        state: state.name,
+        type: type,
+        duration: callingDuration,
+      )
+        ..status = 2;
+      await OpenIM.iMManager.messageManager.insertSingleMessageToLocalStorage(
+        receiverID: receiver,
+        senderID: sender,
+        message: message,
+      );
+      callMessageSubject.add({uid: message});
     }
   }
 }

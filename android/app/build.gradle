@@ -36,8 +36,12 @@ android {
         versionName flutterVersionName
 
         ndk {
-            abiFilters "armeabi-v7a", "arm64-v8a", "armeabi", "x86", "x86_64", "mips", "mips64"
+            abiFilters "arm64-v8a", "armeabi-v7a"//, "armeabi", "x86", "x86_64", "mips", "mips64"
         }
+
+//        packagingOptions {
+//            exclude 'lib/arm64-v8a/libgojni.so'
+//        }
 
         manifestPlaceholders = [
                 JPUSH_PKGNAME: applicationId,
@@ -59,7 +63,7 @@ android {
         release {
             keyAlias 'openim'
             keyPassword 'openim'
-            storeFile file('./openimkey')
+            storeFile file('./openim')
             storePassword 'openim'
         }
     }
@@ -73,13 +77,21 @@ android {
 
         }
         release {
-            minifyEnabled false
-            useProguard false
-            shrinkResources false
+//            minifyEnabled false
+//            useProguard false
+//            shrinkResources false
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+
+    android.applicationVariants.all {
+        variant ->
+            variant.outputs.all {
+                outputFileName = "OpenIM_${versionName}(${versionCode})_${buildType.name}_${buildTime()}.apk"
+            }
     }
 }
 
@@ -89,20 +101,26 @@ flutter {
 
 dependencies {
     // 接入华为厂商
-    implementation 'com.huawei.hms:push:5.0.0.300'
-    implementation 'cn.jiguang.sdk.plugin:huawei:4.2.8'// 极光厂商插件版本与接入 JPush 版本保持一致，下同
+    implementation 'com.huawei.hms:push:5.3.0.301'
+    implementation 'cn.jiguang.sdk.plugin:huawei:4.4.5'// 极光厂商插件版本与接入 JPush 版本保持一致，下同
     // 接入小米厂商
-    implementation 'cn.jiguang.sdk.plugin:xiaomi:4.2.8'
+    implementation 'cn.jiguang.sdk.plugin:xiaomi:4.4.5'
     // 接入 FCM 厂商
-//    implementation 'com.google.firebase:firebase-messaging:21.0.1'
-//    implementation 'cn.jiguang.sdk.plugin:fcm:4.0.0'
+    implementation 'com.google.firebase:firebase-messaging:21.1.0'
+    implementation 'cn.jiguang.sdk.plugin:fcm:4.4.5'
     // 接入魅族厂商
-    implementation 'cn.jiguang.sdk.plugin:meizu:4.2.8'
+    implementation 'cn.jiguang.sdk.plugin:meizu:4.4.5'
     // 接入 VIVO 厂商
-//    implementation 'cn.jiguang.sdk.plugin:vivo:4.2.8'
+//    implementation 'cn.jiguang.sdk.plugin:vivo:4.4.5'
     // 接入 OPPO 厂商
-//    implementation 'cn.jiguang.sdk.plugin:oppo:4.2.8'
+//    implementation 'cn.jiguang.sdk.plugin:oppo:4.4.5'
+
+//    implementation('com.amap.api:location:5.6.0')
 }
 
 apply plugin: 'com.huawei.agconnect'
-//apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.gms.google-services'
+
+static def buildTime() {
+    return new Date().format("MMddHHmm", TimeZone.getTimeZone("GMT+08:00"))
+}

@@ -17,28 +17,32 @@ class SetupPwdPage extends StatelessWidget {
     return TouchCloseSoftKeyboard(
       child: Scaffold(
         backgroundColor: PageStyle.c_FFFFFF,
-        body: Container(
-          padding: EdgeInsets.symmetric(horizontal: 32.w),
-          child: Stack(
-            children: [
-              Positioned(
-                top: 152.h,
-                child: Text(
-                  StrRes.plsSetupPwd,
+        body: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 32.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 152.h),
+                Text(
+                  logic.usedFor == 1
+                      ? StrRes.plsSetupPwd
+                      : StrRes.setupNewPassword,
                   style: PageStyle.ts_333333_26sp,
                 ),
-              ),
-              Positioned(
-                top: 193.h,
-                child: Text(
-                  StrRes.pwdExplanation,
-                  style: PageStyle.ts_1D6BED_16sp,
+                SizedBox(height: 4.h),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        StrRes.pwdExplanation,
+                        style: PageStyle.ts_1D6BED_16sp,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              Positioned(
-                top: 243.h,
-                width: 311.w,
-                child: Obx(() => PwdInputBox(
+                SizedBox(height: 28.h),
+                Obx(() => PwdInputBox(
                       autofocus: true,
                       controller: logic.pwdCtrl,
                       labelStyle: PageStyle.ts_000000_14sp,
@@ -55,25 +59,22 @@ class SetupPwdPage extends StatelessWidget {
                       eyesBtnColor: Color(0xFF000000).withOpacity(0.4),
                       clearBtnColor: Color(0xFF000000).withOpacity(0.4),
                     )),
-              ),
-              Positioned(
-                top: 329.h,
-                child: Text(
+                SizedBox(height: 14.h),
+                Text(
                   StrRes.pwdRule,
                   style: PageStyle.ts_1D6BED_12sp,
                 ),
-              ),
-              Positioned(
-                top: 384.h,
-                width: 311.w,
-                child: Button(
-                  textStyle: PageStyle.ts_FFFFFF_18sp,
-                  text: StrRes.nextStep,
-                  background: PageStyle.c_1D6BED,
-                  onTap: () => logic.nextStep(),
-                ),
-              ),
-            ],
+                SizedBox(height: 155.h),
+                Obx(() => Button(
+                      textStyle: PageStyle.ts_FFFFFF_18sp,
+                      text: logic.usedFor == 1
+                          ? StrRes.nextStep
+                          : StrRes.confirmModify,
+                      enabled: logic.enabled.value,
+                      onTap: () => logic.nextStep(),
+                    )),
+              ],
+            ),
           ),
         ),
       ),

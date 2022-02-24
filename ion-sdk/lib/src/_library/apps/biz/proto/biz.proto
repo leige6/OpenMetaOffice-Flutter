@@ -1,0 +1,213 @@
+syntax = "proto3";
+
+import "ion.proto";
+
+option go_package = "github.com/pion/ion/apps/biz/proto";
+
+package biz;
+
+service Biz {
+  rpc Signal(stream SignalRequest) returns (stream SignalReply);
+}
+
+message Join {
+  ion.Peer peer = 1;
+  string token = 2;
+}
+
+message JoinReply {
+  bool success = 1;
+  string reason = 2;
+}
+
+message Leave {
+  string uid = 1;
+}
+
+
+message LeaveReply {
+  string reason = 1;
+}
+message SignalRequest {
+  oneof payload {
+    Join join = 1;
+    Leave leave = 2;
+    ion.Message msg = 4;
+    MicHandle micHandle = 5;
+    Room room = 6;
+    GetRooms getRooms = 7;
+    LoginHandle loginHandle = 8;
+    MediaHandle mediaHandle = 9;
+      Heart heart = 10;
+  }
+}
+
+message SignalReply {
+  oneof payload {
+    JoinReply joinReply = 1;
+    LeaveReply leaveReply = 2;
+    ion.PeerEvent peerEvent = 3;
+    ion.StreamEvent streamEvent = 4;
+    ion.Message msg = 5;
+    MicHandleReply micHandleReply = 6;
+    RoomReply roomReply = 7;
+    GetRoomsReply getRoomsReply = 8;
+    MicEvent micEvent = 9;
+    LoginHandleReply loginHandleReply = 10;
+    MediaEvent mediaEvent = 11;
+    MediaHandleReply MediaHandleReply = 12;
+    HeartReply  heartReply = 13;
+  }
+}
+//////////////////////////Event///////////////////////
+//Microphone event push
+message MicEvent{
+  repeated Mic mic = 1;
+}
+message Mic{
+  enum State {
+    Open = 0;
+    Close = 1;
+  }
+  string mid = 1;
+  ion.Peer peer = 2;
+  State state = 3;
+}
+//Room event push
+message RoomEvent{
+  Room room = 1;
+}
+////////////////////////////////interface/////////////////////////
+//The operation of the microphone, including the microphone on, off, turn on and turn off the microphone
+enum MicFlag {
+  OPEN = 0;
+  CLOSE = 1;
+  HOLDING = 2;
+  RELEASE = 3;
+}
+message MicHandle{
+  MicFlag flag = 1;
+  ion.Peer peer = 2;
+  string mid = 3;
+}
+message MicHandleReply {
+  bool success = 1;
+  string reason = 2;
+  MicFlag flag = 3;
+  string  mid = 4;
+}
+
+//Creation and deletion of rooms
+enum RoomType{
+  Ordinary = 0;
+}
+message Room{
+  enum State{
+    Create = 0;
+  }
+  ion.Peer peer = 1;
+  RoomType type = 2;
+  State state = 3;
+  bytes info = 4;
+}
+
+message RoomReply{
+  bool success = 1;
+  string  reason = 2;
+  string sid = 3;
+}
+
+
+
+//Get a list of all rooms
+message GetRooms{
+  string uid = 1;
+  RoomType type = 2;
+}
+message GetRoomsReply{
+  repeated RoomInfo roomInfo = 1;
+  bool success = 2;
+}
+message RoomInfo{
+  string sid = 1;
+  RoomType type = 2;
+  bytes info = 3;
+  ion.Peer peer = 4;
+}
+
+
+
+////////////////////////////////Media/////////////////////////
+
+//登录相关的操作
+message LoginHandle{
+  enum Operation{
+    Login = 0;
+    LoginOut = 1;
+  }
+  Operation op = 1;
+  string uid = 2;
+  string token = 3;
+  int32 platformID = 4;
+}
+message LoginHandleReply{
+  bool success = 1;
+  string  reason = 2;
+  string uid = 3;
+}
+//拨号者相关的操作
+enum MediaOperation{
+  Dial = 0;
+  HangUp = 1;
+  Cancel = 2;
+  Accept = 3;
+  Refuse = 4;
+  Aberrant = 5;
+}
+enum StreamType{
+  Voice = 0;
+  Video = 1;
+}
+enum SessionType{
+  Single= 0;
+  Group = 1;
+}
+message Heart{
+  string uid = 1;
+}
+message HeartReply{
+  string  uid = 1;
+}
+
+message MediaHandle{
+  MediaOperation so = 1;
+  SessionType  sessionType = 2;
+  StreamType   streamType = 3;
+  string senderUid = 4;
+  string senderToken = 5;
+  int32 senderPlatformID = 6;
+  int32 receiverPlatformID = 7;
+  repeated string  receiverUidList = 8;
+  string  groupID = 9;
+}
+message MediaHandleReply{
+  bool success = 1;
+  string  reason = 2;
+  int32  errCode  = 3;
+}
+//事件流
+message MediaEvent{
+  MediaOperation so = 1;
+  string senderUid = 2;
+  int32 senderPlatformID = 3;
+  int32 receiverPlatformID = 4;
+  string  receiverUid = 5;
+  StreamType   streamType = 6;
+  SessionType sessionType = 7;
+  string   groupID = 8;
+}
+
+
+
+
+

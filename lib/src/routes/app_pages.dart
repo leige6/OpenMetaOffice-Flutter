@@ -63,6 +63,8 @@ import 'package:openim_enterprise_chat/src/pages/contacts/new_friend/new_friend_
 import 'package:openim_enterprise_chat/src/pages/contacts/new_friend/new_friend_view.dart';
 import 'package:openim_enterprise_chat/src/pages/contacts/search_add_group/search_add_group_binding.dart';
 import 'package:openim_enterprise_chat/src/pages/contacts/search_add_group/search_add_group_view.dart';
+import 'package:openim_enterprise_chat/src/pages/forget_password/forget_password_binding.dart';
+import 'package:openim_enterprise_chat/src/pages/forget_password/forget_password_view.dart';
 import 'package:openim_enterprise_chat/src/pages/home/home_binding.dart';
 import 'package:openim_enterprise_chat/src/pages/home/home_view.dart';
 import 'package:openim_enterprise_chat/src/pages/login/login_binding.dart';
@@ -85,6 +87,8 @@ import 'package:openim_enterprise_chat/src/pages/mine/setup_language/setup_langu
 import 'package:openim_enterprise_chat/src/pages/mine/setup_language/setup_language_view.dart';
 import 'package:openim_enterprise_chat/src/pages/mine/setup_username/setup_name_binding.dart';
 import 'package:openim_enterprise_chat/src/pages/mine/setup_username/setup_name_view.dart';
+import 'package:openim_enterprise_chat/src/pages/organization/organization_binding.dart';
+import 'package:openim_enterprise_chat/src/pages/organization/organization_view.dart';
 import 'package:openim_enterprise_chat/src/pages/register/register_binding.dart';
 import 'package:openim_enterprise_chat/src/pages/register/register_view.dart';
 import 'package:openim_enterprise_chat/src/pages/register/setupinfo/setupinfo_binding.dart';
@@ -125,7 +129,7 @@ class AppPages {
       binding: VerifyPhoneBinding(),
     ),
     GetPage(
-      name: AppRoutes.REGISTER_SETUP_PWD,
+      name: AppRoutes.SETUP_PWD,
       page: () => SetupPwdPage(),
       binding: SetupPwdBinding(),
     ),
@@ -363,6 +367,16 @@ class AppPages {
       name: AppRoutes.HANDLE_GROUP_APPLICATION,
       page: () => HandleGroupApplicationPage(),
       binding: HandleGroupApplicationBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.ORGANIZATION,
+      page: () => OrganizationPage(),
+      binding: OrganizationBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.FORGET_PASSWORD,
+      page: () => ForgetPasswordPage(),
+      binding: ForgetPasswordBinding(),
     ),
   ];
 }

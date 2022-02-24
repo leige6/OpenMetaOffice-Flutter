@@ -101,7 +101,6 @@ class SetupSelfInfoPage extends StatelessWidget {
                       return Button(
                         textStyle: PageStyle.ts_FFFFFF_18sp,
                         text: StrRes.enterApp,
-                        background: PageStyle.c_1D6BED,
                         onTap: onTap,
                       );
                     },
@@ -141,7 +140,7 @@ class SetupSelfInfoPage extends StatelessWidget {
             color: PageStyle.c_D8D8D8,
             borderRadius: BorderRadius.circular(6),
           ),
-          child: IconUtil.assetImage(
+          child: ImageUtil.assetImage(
             indexAvatarList[logic.avatarIndex.value],
             width: 90.h,
             height: 90.h,

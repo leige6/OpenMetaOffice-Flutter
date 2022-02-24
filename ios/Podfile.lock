@@ -4,7 +4,14 @@ PODS:
   - ATBarSDK (1.4.1)
   - audio_session (0.0.1):
     - Flutter
+  - better_player (0.0.1):
+    - Cache (~> 6.0.0)
+    - Flutter
+    - GCDWebServer
+    - HLSCachingReverseProxyServer
+    - PINCache
   - Bugly (2.5.91)
+  - Cache (6.0.0)
   - camera (0.0.1):
     - Flutter
   - DKImagePickerController/Core (4.3.2):
@@ -65,25 +72,32 @@ PODS:
     - Flutter
   - flutter_webrtc (0.2.2):
     - Flutter
+    - GoogleWebRTC (= 1.1.31999)
     - Libyuv (= 1703)
-    - WebRTC-SDK (= 92.4515.07)
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
+  - GCDWebServer (3.5.4):
+    - GCDWebServer/Core (= 3.5.4)
+  - GCDWebServer/Core (3.5.4)
+  - GoogleWebRTC (1.1.31999)
+  - HLSCachingReverseProxyServer (0.1.0):
+    - GCDWebServer (~> 3.5)
+    - PINCache (>= 3.0.1-beta.3)
   - image_cropper (0.0.4):
     - Flutter
-    - TOCropViewController (~> 2.6.0)
+    - TOCropViewController (~> 2.6.1)
   - image_gallery_saver (1.5.0):
     - Flutter
   - image_picker (0.0.1):
     - Flutter
-  - JCore (2.7.1)
-  - JPush (3.7.0):
-    - JCore (< 3.0.0, >= 2.0.0)
+  - JCore (3.1.0)
+  - JPush (4.4.0):
+    - JCore (>= 2.0.0)
   - jpush_flutter (0.0.2):
     - Flutter
-    - JCore (= 2.7.1)
-    - JPush (= 3.7.0)
+    - JCore (= 3.1.0)
+    - JPush (= 4.4.0)
   - just_audio (0.0.1):
     - Flutter
   - libwebp (1.2.1):
@@ -96,9 +110,9 @@ PODS:
     - libwebp/demux
   - libwebp/webp (1.2.1)
   - Libyuv (1703)
-  - Mantle (2.1.6):
-    - Mantle/extobjc (= 2.1.6)
-  - Mantle/extobjc (2.1.6)
+  - Mantle (2.2.0):
+    - Mantle/extobjc (= 2.2.0)
+  - Mantle/extobjc (2.2.0)
   - map_launcher (0.0.1):
     - Flutter
   - MTBBarcodeScanner (5.0.11)
@@ -109,11 +123,19 @@ PODS:
     - Flutter
   - path_provider_ios (0.0.1):
     - Flutter
-  - "permission_handler (5.1.0+2)":
+  - permission_handler_apple (9.0.2):
     - Flutter
   - photo_manager (1.0.0):
     - Flutter
     - FlutterMacOS
+  - PINCache (3.0.3):
+    - PINCache/Arc-exception-safe (= 3.0.3)
+    - PINCache/Core (= 3.0.3)
+  - PINCache/Arc-exception-safe (3.0.3):
+    - PINCache/Core
+  - PINCache/Core (3.0.3):
+    - PINOperation (~> 1.2.1)
+  - PINOperation (1.2.1)
   - qr_code_scanner (0.2.0):
     - Flutter
     - MTBBarcodeScanner
@@ -123,9 +145,9 @@ PODS:
     - ZXingObjC (~> 3.6.5)
   - record (0.0.1):
     - Flutter
-  - SDWebImage (5.12.1):
-    - SDWebImage/Core (= 5.12.1)
-  - SDWebImage/Core (5.12.1)
+  - SDWebImage (5.12.2):
+    - SDWebImage/Core (= 5.12.2)
+  - SDWebImage/Core (5.12.2)
   - SDWebImageWebPCoder (0.8.4):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
@@ -134,17 +156,16 @@ PODS:
   - sqflite (0.0.2):
     - Flutter
     - FMDB (>= 2.7.5)
-  - SwiftyGif (5.4.1)
-  - TOCropViewController (2.6.0)
+  - SwiftyGif (5.4.2)
+  - TOCropViewController (2.6.1)
   - uri_to_file (0.0.1):
     - Flutter
   - url_launcher_ios (0.0.1):
     - Flutter
-  - video_player (0.0.1):
+  - video_player_avfoundation (0.0.1):
     - Flutter
   - wakelock (0.0.1):
     - Flutter
-  - WebRTC-SDK (92.4515.07)
   - ZXingObjC (3.6.5):
     - ZXingObjC/All (= 3.6.5)
   - ZXingObjC/All (3.6.5)
@@ -152,6 +173,7 @@ PODS:
 DEPENDENCIES:
   - app_installer (from `.symlinks/plugins/app_installer/ios`)
   - audio_session (from `.symlinks/plugins/audio_session/ios`)
+  - better_player (from `.symlinks/plugins/better_player/ios`)
   - camera (from `.symlinks/plugins/camera/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Flutter (from `Flutter`)
@@ -171,7 +193,7 @@ DEPENDENCIES:
   - open_file (from `.symlinks/plugins/open_file/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
-  - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - photo_manager (from `.symlinks/plugins/photo_manager/ios`)
   - qr_code_scanner (from `.symlinks/plugins/qr_code_scanner/ios`)
   - r_scan (from `.symlinks/plugins/r_scan/ios`)
@@ -180,16 +202,20 @@ DEPENDENCIES:
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
   - uri_to_file (from `.symlinks/plugins/uri_to_file/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
-  - video_player (from `.symlinks/plugins/video_player/ios`)
+  - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/ios`)
   - wakelock (from `.symlinks/plugins/wakelock/ios`)
 
 SPEC REPOS:
   trunk:
     - ATBarSDK
     - Bugly
+    - Cache
     - DKImagePickerController
     - DKPhotoGallery
     - FMDB
+    - GCDWebServer
+    - GoogleWebRTC
+    - HLSCachingReverseProxyServer
     - JCore
     - JPush
     - libwebp
@@ -197,11 +223,12 @@ SPEC REPOS:
     - Mantle
     - MTBBarcodeScanner
     - OrderedSet
+    - PINCache
+    - PINOperation
     - SDWebImage
     - SDWebImageWebPCoder
     - SwiftyGif
     - TOCropViewController
-    - WebRTC-SDK
     - ZXingObjC
 
 EXTERNAL SOURCES:
@@ -209,6 +236,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/app_installer/ios"
   audio_session:
     :path: ".symlinks/plugins/audio_session/ios"
+  better_player:
+    :path: ".symlinks/plugins/better_player/ios"
   camera:
     :path: ".symlinks/plugins/camera/ios"
   file_picker:
@@ -247,8 +276,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/package_info_plus/ios"
   path_provider_ios:
     :path: ".symlinks/plugins/path_provider_ios/ios"
-  permission_handler:
-    :path: ".symlinks/plugins/permission_handler/ios"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
   photo_manager:
     :path: ".symlinks/plugins/photo_manager/ios"
   qr_code_scanner:
@@ -265,8 +294,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/uri_to_file/ios"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
-  video_player:
-    :path: ".symlinks/plugins/video_player/ios"
+  video_player_avfoundation:
+    :path: ".symlinks/plugins/video_player_avfoundation/ios"
   wakelock:
     :path: ".symlinks/plugins/wakelock/ios"
 
@@ -274,8 +303,10 @@ SPEC CHECKSUMS:
   app_installer: 4301996bd8f3c6f75776416b8885a6d92928306f
   ATBarSDK: b6aa2b6a120ac7d6b1ff041bd60b9edde6bb17c4
   audio_session: 4f3e461722055d21515cf3261b64c973c062f345
+  better_player: 2406bfe8175203c7a46fa15f9d778d73b12e1646
   Bugly: afe841bba2ea6de6d432a3c125240a5e75949c55
-  camera: fe33292aff715a981eb34d7ce7b35b54337ff34c
+  Cache: 4ca7e00363fca5455f26534e5607634c820ffc2d
+  camera: 9993f92f2c793e87b65e35f3a23c70582afb05b1
   DKImagePickerController: b5eb7f7a388e4643264105d648d01f727110fc3d
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
   file_picker: 3e6c3790de664ccf9b882732d9db5eaf6b8d4eb1
@@ -285,43 +316,47 @@ SPEC CHECKSUMS:
   flutter_image_compress: fd2b476345226e1a10ea352fa306af95704642c1
   flutter_inappwebview: bfd58618f49dc62f2676de690fc6dcda1d6c3721
   flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
-  flutter_openim_sdk: 1bc0509c4e3ae8a841a520e8e9d0012eb1176f34
-  flutter_webrtc: 6b71a1fc1d931a3dfe879e578ea10e2e6cd84f53
+  flutter_openim_sdk: fb45777c3d642ea4921f6687c8a4fac41c025eda
+  flutter_webrtc: 39898454258b54ba51996850d5da8d5d53bf1524
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
-  image_cropper: f1668dd8d2cad2d357955caad15a40547856edcb
+  GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
+  GoogleWebRTC: b39a78c4f5cc6b0323415b9233db03a2faa7b0f0
+  HLSCachingReverseProxyServer: 59935e1e0244ad7f3375d75b5ef46e8eb26ab181
+  image_cropper: 60c2789d1f1a78c873235d4319ca0c34a69f2d98
   image_gallery_saver: 259eab68fb271cfd57d599904f7acdc7832e7ef2
-  image_picker: 9aa50e1d8cdacdbed739e925b7eea16d014367e6
-  JCore: 9d5bda3a172c65bbe14f2806ab0f6246f8a06065
-  JPush: 1fd7a326e7e6588eba517659ce1b79a144e54938
-  jpush_flutter: d5fd523a73277ed66d453fc7ac1c981d1fa525e2
+  image_picker: 541dcbb3b9cf32d87eacbd957845d8651d6c62c3
+  JCore: 4029befb2497adc36b2496e2cfd6b24d9f671784
+  JPush: b7d00f2cc78766e76c8abb30a5741fe94d21e5bc
+  jpush_flutter: bc88cfa9a4ff4481031564b641c3fe24024bb2cb
   just_audio: baa7252489dbcf47a4c7cc9ca663e9661c99aafa
   libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
   Libyuv: 5f79ced0ee66e60a612ca97de1e6ccacd187a437
-  Mantle: 4c0ed6ce47c96eccc4dc3bb071deb3def0e2c3be
+  Mantle: c5aa8794a29a022dfbbfc9799af95f477a69b62d
   map_launcher: e325db1261d029ff33e08e03baccffe09593ffea
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
   open_file: 02eb5cb6b21264bd3a696876f5afbfb7ca4f4b7d
   OrderedSet: aaeb196f7fef5a9edf55d89760da9176ad40b93c
   package_info_plus: 6c92f08e1f853dc01228d6f553146438dafcd14e
   path_provider_ios: 7d7ce634493af4477d156294792024ec3485acd5
-  permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
+  permission_handler_apple: d21b38e1a4b2e041c63af9568f9165e114e507a6
   photo_manager: 84fa94fbeb82e607333ea9a13c43b58e0903a463
+  PINCache: 7a8fc1a691173d21dbddbf86cd515de6efa55086
+  PINOperation: 00c935935f1e8cf0d1e2d6b542e75b88fc3e5e20
   qr_code_scanner: bb67d64904c3b9658ada8c402e8b4d406d5d796e
   r_scan: 5672d9b68f8cece3835895a6aaab12047acf65bd
   record: 7ee2393532f8553bbb09fa19e95478323b7c0a99
-  SDWebImage: 4dc3e42d9ec0c1028b960a33ac6b637bb432207b
+  SDWebImage: 240e5c12b592fb1268c1d03b8c90d90e8c2ffe82
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
-  shared_preferences_ios: aef470a42dc4675a1cdd50e3158b42e3d1232b32
+  shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
   sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
-  SwiftyGif: 6895c887f5551618a3c5dd3ecb512419105bacca
-  TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
+  SwiftyGif: dec758a9dd3d278e5a855dbf279bf062c923c387
+  TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   uri_to_file: c4726881848febf4806f0a5707bd12903e02b0f0
-  url_launcher_ios: 02f1989d4e14e998335b02b67a7590fa34f971af
-  video_player: ecd305f42e9044793efd34846e1ce64c31ea6fcb
+  url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
+  video_player_avfoundation: e489aac24ef5cf7af82702979ed16f2a5ef84cff
   wakelock: d0fc7c864128eac40eba1617cb5264d9c940b46f
-  WebRTC-SDK: 540a44f2e30e89c75e331d5c4a372253ba668233
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 6a027b6c926211726afdb5aa905d2de7dbbbcb71
+PODFILE CHECKSUM: 15f7e523eab70db2610b86c2b5daf9476dcafe98
 
 COCOAPODS: 1.11.2

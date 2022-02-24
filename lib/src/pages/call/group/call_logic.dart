@@ -109,13 +109,14 @@ class GroupCallLogic extends GetxController {
   /// 更新用户信息
   void _queryCallingMembersInfo() async {
     if (participantIdList.isEmpty) return;
-    var list = await OpenIM.iMManager.getUsersInfo(participantIdList);
+    var list = await OpenIM.iMManager.userManager
+        .getUsersInfo(uidList: participantIdList);
     list.forEach((element) {
-      if (element.uid == senderUid) {
+      if (element.userID == senderUid) {
         senderName.value = element.getShowName();
-        senderIcon.value = element.icon ?? '';
+        senderIcon.value = element.faceURL ?? '';
       }
-      var seat = seatMap[element.uid];
+      var seat = seatMap[element.userID];
       seat!.update((val) {
         val?.user = element;
       });
@@ -135,7 +136,7 @@ class GroupCallLogic extends GetxController {
   String? getMemberAvatar(index) {
     var seat = seatMap.values.elementAt(index).value;
     if (seat.user != null) {
-      return seat.user!.icon;
+      return seat.user!.faceURL;
     } else if (seat.peer != null) {
       return seat.peer!.info['icon'];
     }

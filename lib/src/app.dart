@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:openim_enterprise_chat/src/res/strings.dart';
@@ -19,10 +18,10 @@ class EnterpriseChatApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppView(
-      builder: (locale) => GetMaterialApp(
+      builder: (locale, builder) => GetMaterialApp(
         debugShowCheckedModeBanner: true,
         enableLog: true,
-        builder: EasyLoading.init(),
+        builder: builder,
         logWriterCallback: Logger.print,
         translations: TranslationService(),
         localizationsDelegates: [

@@ -26,12 +26,12 @@ class GroupSetupLogic extends GetxController {
   ConversationInfo? conversationInfo;
 
   getGroupMembers() async {
-    var map = await OpenIM.iMManager.groupManager.getGroupMemberListMap(
+    var list = await OpenIM.iMManager.groupManager.getGroupMemberListMap(
       groupId: info.value.groupID,
     );
 
-    if (map['data'] is List) {
-      var l = (map['data'] as List).map((e) => en.GroupMembersInfo.fromJson(e));
+    if (list is List) {
+      var l = list.map((e) => en.GroupMembersInfo.fromJson(e));
       memberList.assignAll(l);
       info.update((val) {
         val?.memberCount = l.length;
@@ -43,15 +43,16 @@ class GroupSetupLogic extends GetxController {
     var list = await OpenIM.iMManager.groupManager.getGroupsInfo(
       gidList: [info.value.groupID],
     );
+    if (list.isEmpty) return;
     var value = list.first;
     info.update((val) {
       val?.groupName = value.groupName;
-      val?.faceUrl = value.faceUrl;
+      val?.faceURL = value.faceURL;
       val?.notification = value.notification;
       val?.introduction = value.introduction;
       val?.memberCount = value.memberCount;
-      val?.ownerId = value.ownerId;
-      print('群组id:${value.ownerId}');
+      val?.ownerUserID = value.ownerUserID;
+      print('群组id:${value.ownerUserID}');
     });
   }
 
@@ -61,7 +62,7 @@ class GroupSetupLogic extends GetxController {
       uidList: [OpenIM.iMManager.uid],
     );
     if (list.length > 0) {
-      myGroupNickname.value = list.first.nickName ?? '';
+      myGroupNickname.value = list.first.nickname ?? '';
     }
   }
 
@@ -71,7 +72,7 @@ class GroupSetupLogic extends GetxController {
         if (url != null) {
           await _updateGroupInfo(faceUrl: url);
           info.update((val) {
-            val?.faceUrl = url;
+            val?.faceURL = url;
           });
         }
       },
@@ -84,20 +85,20 @@ class GroupSetupLogic extends GetxController {
   }
 
   void modifyGroupName() {
-    if (info.value.ownerId != OpenIM.iMManager.uid) {
+    if (info.value.ownerUserID != OpenIM.iMManager.uid) {
       IMWidget.showToast(StrRes.onlyTheOwnerCanModify);
       return;
     }
-    AppNavigator.startGroupNameSet(info: info);
+    AppNavigator.startGroupNameSet(info: info.value);
     // Get.toNamed(AppRoutes.GROUP_NAME_SETUP, arguments: info);
   }
 
   void editGroupAnnouncement() {
-    if (info.value.ownerId != OpenIM.iMManager.uid) {
+    if (info.value.ownerUserID != OpenIM.iMManager.uid) {
       IMWidget.showToast(StrRes.onlyTheOwnerCanModify);
       return;
     }
-    AppNavigator.startEditAnnouncement(info: info);
+    AppNavigator.startEditAnnouncement(info: info.value);
     // Get.toNamed(AppRoutes.GROUP_ANNOUNCEMENT_SETUP, arguments: info);
   }
 
@@ -107,7 +108,7 @@ class GroupSetupLogic extends GetxController {
   }
 
   void viewGroupMembers() async {
-    print('群组id:${info.value.ownerId}');
+    print('群组id:${info.value.ownerUserID}');
     AppNavigator.startGroupMemberManager(info: info.value);
     // await Get.toNamed(
     //   AppRoutes.GROUP_MEMBER_MANAGER,
@@ -118,7 +119,7 @@ class GroupSetupLogic extends GetxController {
 
   void transferGroup() async {
     var list = memberList;
-    list.removeWhere((e) => e.userId == info.value.ownerId);
+    list.removeWhere((e) => e.userID == info.value.ownerUserID);
     var result = await AppNavigator.startGroupMemberList(
       gid: info.value.groupID,
       list: list,
@@ -128,11 +129,11 @@ class GroupSetupLogic extends GetxController {
       GroupMembersInfo member = result;
       await OpenIM.iMManager.groupManager.transferGroupOwner(
         gid: info.value.groupID,
-        uid: member.userId!,
+        uid: member.userID!,
       );
 
       info.update((val) {
-        val?.ownerId = member.userId;
+        val?.ownerUserID = member.userID;
       });
     }
   }
@@ -157,8 +158,8 @@ class GroupSetupLogic extends GetxController {
           gid: info.value.groupID,
         );
         // 获取会话id
-        String conversationID =
-            await OpenIM.iMManager.conversationManager.getConversationID(
+        String conversationID = await OpenIM.iMManager.conversationManager
+            .getConversationIDBySessionType(
           sourceID: info.value.groupID,
           sessionType: 2,
         );
@@ -185,7 +186,7 @@ class GroupSetupLogic extends GetxController {
   }
 
   bool isMyGroup() {
-    return info.value.ownerId == OpenIM.iMManager.uid;
+    return info.value.ownerUserID == OpenIM.iMManager.uid;
   }
 
   _updateGroupInfo({
@@ -208,7 +209,7 @@ class GroupSetupLogic extends GetxController {
     info = GroupInfo(
       groupID: Get.arguments['gid'],
       groupName: Get.arguments['name'],
-      faceUrl: Get.arguments['icon'],
+      faceURL: Get.arguments['icon'],
       memberCount: 0,
     ).obs;
     imLogic.groupInfoUpdatedSubject.listen((value) {
@@ -216,28 +217,26 @@ class GroupSetupLogic extends GetxController {
         info.update((val) {
           // val?.ownerId = value.ownerId;
           val?.groupName = value.groupName;
-          val?.faceUrl = value.faceUrl;
+          val?.faceURL = value.faceURL;
           val?.notification = value.notification;
           val?.introduction = value.introduction;
-          // val?.memberCount = value.memberCount;
+          val?.memberCount = value.memberCount;
         });
       }
     });
-    // imLogic.onMemberLeave = (gid, info) {
-    //   getGroupMembers();
-    // };
-    // imLogic.onMemberKicked = (gid, info, list) {
-    //   getGroupMembers();
-    // };
-    // imLogic.onMemberInvited = (gid, info, list) {
-    //   getGroupMembers();
-    // };
-    // imLogic.onMemberEnter = (gid, info) {
-    //   getGroupMembers();
-    // };
-    // imLogic.onReceiveJoinApplication = (gid, info, opReason) {
-    //   getGroupMembers();
-    // };
+    imLogic.memberAddedSubject.listen((e) {
+      var i = en.GroupMembersInfo.fromJson(e.toJson());
+      memberList.add(i);
+      info.update((val) {
+        val?.memberCount = memberList.length;
+      });
+    });
+    imLogic.memberDeletedSubject.listen((e) {
+      memberList.removeWhere((element) => element.userID == e.userID);
+      info.update((val) {
+        val?.memberCount = memberList.length;
+      });
+    });
     super.onInit();
   }
 
@@ -293,11 +292,11 @@ class GroupSetupLogic extends GetxController {
 
   void getConversationInfo() async {
     conversationInfo =
-        await OpenIM.iMManager.conversationManager.getSingleConversation(
+        await OpenIM.iMManager.conversationManager.getOneConversation(
       sourceID: info.value.groupID,
       sessionType: 2,
     );
-    topContacts.value = conversationInfo!.isPinned == 1;
+    topContacts.value = conversationInfo!.isPinned!;
   }
 
   void toggleTopContacts() async {

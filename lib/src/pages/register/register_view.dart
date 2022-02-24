@@ -53,16 +53,14 @@ class RegisterPage extends StatelessWidget {
                 ),
                 Button(
                   onTap: () => logic.nextStep(),
-                  textStyle: PageStyle.ts_FFFFFF_18sp,
                   margin: EdgeInsets.only(top: 59.h, left: 32.w, right: 32.w),
                   text: StrRes.nowRegister,
-                  background: PageStyle.c_1D6BED,
                 ),
                 Obx(() => ProtocolView(
                       isChecked: logic.agreedProtocol.value,
                       radioStyle: RadioStyle.BLUE,
                       onTap: () => logic.toggleProtocol(),
-                      margin: EdgeInsets.only(left: 48.w, top: 19.h),
+                      margin: EdgeInsets.only(top: 19.h),
                       style1: PageStyle.ts_000000_12sp,
                       style2: PageStyle.ts_1D6BED_12sp,
                     )),

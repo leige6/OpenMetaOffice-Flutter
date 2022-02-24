@@ -34,6 +34,7 @@ class CallRecordsLogic extends GetxController {
 
   bool remove(CallRecords records) {
     _needUpdate = true;
+    missedList.remove(records);
     return list.remove(records);
   }
 

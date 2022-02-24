@@ -5,21 +5,17 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 
-import 'package:openim_enterprise_chat/main.dart';
-import 'package:rxdart/rxdart.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-void main() async{
- var pub = PublishSubject<int>();
- pub.sink.add(1);
- pub.stream.listen((event) {
-   print('1-------$event');
+void main() async {
+  var list = [1, 9, 6, 2, 5, 3];
+  list.sort((a, b) {
+    if (a > b)
+      return -1;
+    else if (a < b)
+      return 1;
+    else
+      return 0;
   });
- pub.stream.listen((event) {
-   print('2-------$event');
- });
- pub.sink.add(2);
+  print('$list');
 }

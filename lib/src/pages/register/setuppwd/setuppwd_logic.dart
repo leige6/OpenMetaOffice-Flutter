@@ -4,13 +4,18 @@ import 'package:openim_enterprise_chat/src/res/strings.dart';
 import 'package:openim_enterprise_chat/src/routes/app_navigator.dart';
 import 'package:openim_enterprise_chat/src/widgets/im_widget.dart';
 
+import '../../../common/apis.dart';
+import '../../../widgets/loading_view.dart';
+
 class SetupPwdLogic extends GetxController {
   var pwdCtrl = TextEditingController();
   var showPwdClearBtn = false.obs;
   var obscureText = true.obs;
+  var enabled = false.obs;
   String? phoneNumber;
   String? areaCode;
   String? email;
+  late int usedFor;
   late String verifyCode;
 
   void nextStep() {
@@ -18,14 +23,29 @@ class SetupPwdLogic extends GetxController {
       IMWidget.showToast(StrRes.pwdFormatError);
       return;
     }
-    AppNavigator.startRegisterSetupSelfInfo(
-      areaCode: areaCode,
-      phoneNumber: phoneNumber,
-      email: email,
-      verifyCode: verifyCode,
-      password: pwdCtrl.text,
-    );
-    // Get.toNamed(AppRoutes.REGISTER_SETUP_SELF_INFO);
+    if (usedFor == 1) {
+      // 设置密码/注册
+      AppNavigator.startRegisterSetupSelfInfo(
+        areaCode: areaCode,
+        phoneNumber: phoneNumber,
+        email: email,
+        verifyCode: verifyCode,
+        password: pwdCtrl.text,
+      );
+    } else if (usedFor == 2) {
+      //重置密码
+      LoadingView.singleton.wrap(asyncFunction: () async {
+        await Apis.resetPassword(
+          areaCode: areaCode,
+          phoneNumber: phoneNumber,
+          email: email,
+          password: pwdCtrl.text,
+          verificationCode: verifyCode,
+        ).then((value) {
+          AppNavigator.backLogin();
+        });
+      });
+    }
   }
 
   void toggleEye() {
@@ -38,6 +58,7 @@ class SetupPwdLogic extends GetxController {
     areaCode = Get.arguments['areaCode'];
     email = Get.arguments['email'];
     verifyCode = Get.arguments['verifyCode'];
+    usedFor = Get.arguments['usedFor'];
     super.onInit();
   }
 
@@ -45,6 +66,7 @@ class SetupPwdLogic extends GetxController {
   void onReady() {
     pwdCtrl.addListener(() {
       showPwdClearBtn.value = pwdCtrl.text.isNotEmpty;
+      enabled.value = pwdCtrl.text.isNotEmpty;
     });
     super.onReady();
   }

@@ -3,6 +3,7 @@ import 'package:flutter_openim_widget/flutter_openim_widget.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:openim_enterprise_chat/src/utils/im_util.dart';
+import 'package:uuid/uuid.dart';
 
 class AvatarView extends StatelessWidget {
   const AvatarView({
@@ -14,10 +15,12 @@ class AvatarView extends StatelessWidget {
     this.text,
     this.textStyle,
     this.onLongPress,
-    this.isCircle = true,
+    this.isCircle = false,
     this.borderRadius,
     this.enabledPreview = false,
-    this.lowMemory = false,
+    this.lowMemory = true,
+    this.isNineGrid = false,
+    this.nineGridUrl = const [],
   }) : super(key: key);
   final bool visible;
   final double? size;
@@ -30,27 +33,51 @@ class AvatarView extends StatelessWidget {
   final String? text;
   final TextStyle? textStyle;
   final bool lowMemory;
+  final bool isNineGrid;
+  final List<String> nineGridUrl;
 
   @override
   Widget build(BuildContext context) {
-    return ChatAvatarView(
-      visible: visible,
-      size: size ?? 42.h,
-      onTap: onTap ??
-          (enabledPreview
-              ? () {
-                  if (url != null && url!.trim().isNotEmpty) {
-                    Get.to(() => IMUtil.previewPic(id: url!, url: url));
+    var tag = Uuid().v4();
+    return Hero(
+      tag: tag,
+      child: ChatAvatarView(
+        visible: visible,
+        size: size ?? 42.h,
+        onTap: onTap ??
+            (enabledPreview
+                ? () {
+                    if (url != null && url!.trim().isNotEmpty) {
+                      Get.to(() => IMUtil.previewPic(
+                          tag: tag, picList: [PicInfo(url: url)]));
+                    }
                   }
-                }
-              : null),
-      url: url,
-      text: text,
-      textStyle: textStyle,
-      onLongPress: onLongPress,
-      isCircle: isCircle,
-      borderRadius: borderRadius,
-      lowMemory: lowMemory,
+                : null),
+        url: url,
+        text: text,
+        textStyle: textStyle,
+        onLongPress: onLongPress,
+        isCircle: isCircle,
+        borderRadius: borderRadius,
+        lowMemory: lowMemory,
+        isNineGrid: false,
+        nineGridUrls: [],
+      ),
     );
   }
+
+  AvatarView.nineGrid(
+    this.visible,
+    this.size,
+    this.borderRadius,
+    this.nineGridUrl,
+  )   : lowMemory = false,
+        url = null,
+        isCircle = false,
+        enabledPreview = false,
+        isNineGrid = false,
+        text = null,
+        textStyle = null,
+        onLongPress = null,
+        onTap = null;
 }

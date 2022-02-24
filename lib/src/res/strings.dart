@@ -52,6 +52,8 @@ class StrRes {
 
   static get resendVerifyCode => 'resendVerifyCode'.tr;
 
+  static get sendVerifyCode => 'sendVerifyCode'.tr;
+
   static get plsSetupPwd => 'plsSetupPwd'.tr;
 
   static get pwdExplanation => 'pwdExplanation'.tr;
@@ -593,4 +595,50 @@ class StrRes {
   static get accountWarn => 'accountWarn'.tr;
 
   static get accountException => 'accountException'.tr;
+
+  static get inviteMember => 'inviteMember'.tr;
+
+  static get removeMember => 'removeMember'.tr;
+
+  static get groupOwner => 'groupOwner'.tr;
+
+  static get groupAdmin => 'groupAdmin'.tr;
+
+  static get announcementHint => 'announcementHint'.tr;
+
+  static get publish => 'publish'.tr;
+
+  static get more => 'more'.tr;
+
+  static get iKnow => 'iKnow'.tr;
+
+  static get workbench => 'workbench'.tr;
+
+  static get callDuration => 'callDuration'.tr;
+
+  static get cancelled => 'cancelled'.tr;
+
+  static get cancelledByCaller => 'cancelledByCaller'.tr;
+
+  static get rejectedByCaller => 'rejectedByCaller'.tr;
+
+  static get unsupportedMessage => 'unsupportedMessage'.tr;
+
+  static get gender => 'gender'.tr;
+
+  static get birthday => 'birthday'.tr;
+
+  static get man => 'man'.tr;
+
+  static get woman => 'woman'.tr;
+
+  static get personalInfo => 'personalInfo'.tr;
+
+  static get getVerificationCode => 'getVerificationCode'.tr;
+
+  static get setupNewPassword => 'setupNewPassword'.tr;
+
+  static get plsInputNewPassword => 'plsInputNewPassword'.tr;
+
+  static get confirmModify => 'confirmModify'.tr;
 }

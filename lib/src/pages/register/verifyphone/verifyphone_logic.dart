@@ -14,6 +14,7 @@ class VerifyPhoneLogic extends GetxController {
   String? phoneNumber;
   String? areaCode;
   String? email;
+  late int usedFor;
 
   void shake() {
     codeErrorCtrl.add(ErrorAnimationType.shake);
@@ -26,13 +27,15 @@ class VerifyPhoneLogic extends GetxController {
         phoneNumber: phoneNumber,
         email: email,
         verificationCode: value,
+        usedFor: usedFor,
       );
 
-      AppNavigator.startRegisterSetupPwd(
+      AppNavigator.startSetupPwd(
         areaCode: areaCode,
         phoneNumber: phoneNumber,
         email: email,
         verifyCode: value,
+        usedFor: usedFor,
       );
     } catch (e) {
       shake();
@@ -45,6 +48,7 @@ class VerifyPhoneLogic extends GetxController {
     phoneNumber = Get.arguments['phoneNumber'];
     areaCode = Get.arguments['areaCode'];
     email = Get.arguments['email'];
+    usedFor = Get.arguments['usedFor'];
     super.onInit();
   }
 
@@ -60,6 +64,7 @@ class VerifyPhoneLogic extends GetxController {
         areaCode: areaCode,
         phoneNumber: phoneNumber,
         email: email,
+        usedFor: usedFor,
       );
 
   @override

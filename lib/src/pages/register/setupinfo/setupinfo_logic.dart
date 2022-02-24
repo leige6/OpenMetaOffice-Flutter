@@ -12,6 +12,8 @@ import 'package:openim_enterprise_chat/src/routes/app_navigator.dart';
 import 'package:openim_enterprise_chat/src/widgets/im_widget.dart';
 import 'package:openim_enterprise_chat/src/widgets/loading_view.dart';
 
+import '../../../utils/data_persistence.dart';
+
 class SetupSelfInfoLogic extends GetxController {
   var imLogic = Get.find<IMController>();
   var callLogic = Get.find<CallController>();
@@ -57,19 +59,19 @@ class SetupSelfInfoLogic extends GetxController {
   }
 
   _login() async {
-    var data = await Apis.register(
+    var data = await Apis.setPassword(
       areaCode: areaCode,
       phoneNumber: phoneNumber,
       email: email,
       password: password,
       verificationCode: verifyCode,
     );
-
-    var uid = data.uid;
+    await DataPersistence.putLoginCertificate(data);
+    var uid = data.userID;
     var token = data.token;
     print('---------login---------- uid: $uid, token: $token');
     await imLogic.login(uid, token);
-    await syncSelfInfo(uid);
+    await syncSelfInfo();
     await adminOperate(uid);
     print('---------im login success-------');
     await callLogic.login(uid, token);
@@ -85,18 +87,17 @@ class SetupSelfInfoLogic extends GetxController {
       // 登录管理员
       var data = await Apis.login2('openIM123456');
       // 以管理员身份为用户导入好友
-      // await Apis.importFriends(uid: phoneNumber, token: data.token);
+      await Apis.importFriends(uid: uid, token: data.token);
       // 拉用户进群
       await Apis.inviteToGroup(uid: uid, token: data.token);
     } catch (e) {}
   }
 
-  syncSelfInfo(String uid) async {
-    await OpenIM.iMManager.setSelfInfo(
-      uid: uid,
-      name: nameCtrl.text,
-      icon: icon.isEmpty ? indexAvatarList[avatarIndex.value] : icon.value,
-      mobile: phoneNumber,
+  syncSelfInfo() async {
+    await OpenIM.iMManager.userManager.setSelfInfo(
+      nickname: nameCtrl.text,
+      faceURL: icon.isEmpty ? indexAvatarList[avatarIndex.value] : icon.value,
+      phoneNumber: phoneNumber,
       email: email,
     );
   }
@@ -108,6 +109,8 @@ class SetupSelfInfoLogic extends GetxController {
           if (icon.isNotEmpty) avatarIndex.value = -1;
         },
         isAvatar: true,
+        fromCamera: false,
+        fromGallery: false,
         onIndexAvatar: (index) {
           if (null != index) {
             avatarIndex.value = index;

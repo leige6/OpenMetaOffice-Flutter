@@ -5,7 +5,8 @@ class Urls {
   static var login2 = "${Config.imApiUrl()}/auth/user_token";
   static var importFriends = "${Config.imApiUrl()}/friend/import_friend";
   static var inviteToGroup = "${Config.imApiUrl()}/group/invite_user_to_group";
-  static var onlineStatus = "${Config.imApiUrl()}/user/get_users_online_status";
+  static var onlineStatus =
+      "${Config.imApiUrl()}/manager/get_users_online_status";
 
   ///
   // static const getVerificationCode = "/cpc/auth/code";
@@ -16,7 +17,8 @@ class Urls {
   /// 登录注册是独立于im的业务
   static var getVerificationCode = "${Config.appAuthUrl()}/auth/code";
   static var checkVerificationCode = "${Config.appAuthUrl()}/auth/verify";
-  static var register = "${Config.appAuthUrl()}/auth/password";
+  static var setPwd = "${Config.appAuthUrl()}/auth/password";
+  static var resetPwd = "${Config.appAuthUrl()}/auth/reset_password";
   static var login = "${Config.appAuthUrl()}/auth/login";
   static var upgrade = "${Config.appAuthUrl()}/app/check";
 }

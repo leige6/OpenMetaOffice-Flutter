@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Gradle: cn.jiguang.sdk.plugin:xiaomi:4.4.5@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/3cc0cfae1d03aa3e917b167381d49743/jetified-xiaomi-4.4.5/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/3cc0cfae1d03aa3e917b167381d49743/jetified-xiaomi-4.4.5/jars/libs/MiPush_SDK_Client_4_8_2.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/3cc0cfae1d03aa3e917b167381d49743/jetified-xiaomi-4.4.5/jars/libs/jpush-android-plugin-xiaomi-v4.4.5.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/3cc0cfae1d03aa3e917b167381d49743/jetified-xiaomi-4.4.5/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/3cc0cfae1d03aa3e917b167381d49743/jetified-xiaomi-4.4.5/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/cn.jiguang.sdk.plugin/xiaomi/4.4.5/8429522c8a96ed12b38fa5fcbb224c2445ad914a/xiaomi-4.4.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

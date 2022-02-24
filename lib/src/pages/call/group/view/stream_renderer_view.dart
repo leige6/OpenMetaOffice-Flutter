@@ -38,14 +38,14 @@ class GroupStreamRendererView extends StatelessWidget {
   Widget _buildRemoteView(index) {
     var seat = logic.seatMap.values.elementAt(index).value;
     return _buildItemView(
-      url: seat.user?.icon ?? seat.peer?.info['icon'],
+      url: seat.user?.faceURL ?? seat.peer?.info['icon'],
       cameraOpened: seat.cameraOpened,
       participant: seat.participant,
     );
   }
 
   Widget _buildLocalView() => _buildItemView(
-        url: OpenIM.iMManager.uInfo.icon,
+        url: OpenIM.iMManager.uInfo.faceURL,
         cameraOpened: logic.callCtrl.localVideoEnabled.value,
         participant: logic.callCtrl.localStream,
       );
